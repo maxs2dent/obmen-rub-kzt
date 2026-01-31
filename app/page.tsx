@@ -215,62 +215,44 @@ export default function ExchangePage() {
               {submitting ? "Отправка..." : "Отправить заявку"}
             </button>
           </form>
-        )}
+)}
 
         {submitted && (
           <div className="bg-green-100 text-green-800 p-4 rounded-lg text-center">
-            ЗЗаявка принята. С важи свяжется наш менеджер для уточнения деталей и выполнит перевод.
+            Заявка принята. Мы свяжемся с вами.
           </div>
         )}
- {/* FAQ */}
-        <section className="pt-8">
-          <h2 className="font-semibold mb-3">Часто задаваемые вопросы</h2>
+<section className="mt-10 space-y-4">
+  <h2 className="text-lg font-semibold text-foreground">
+    Часто задаваемые вопросы
+  </h2>
 
-          <details>
-            <summary className="cursor-pointer font-medium">
-              Сколько времени занимает перевод рублей в тенге?
-            </summary>
-            <p className="mt-2 text-sm">
-              После подтверждения заявки перевод рублей в тенге обычно занимает от 1 до 5 минут.
-            </p>
-          </details>
+  <div className="space-y-3 text-sm text-muted-foreground">
+    <p>
+      <strong>Сколько времени занимает перевод денег?</strong><br />
+      После подтверждения заявки перевод на карту обычно занимает от 1 до 5 минут.
+      В редких случаях время может увеличиться из-за банка получателя.
+    </p>
 
-          <details>
-            <summary className="cursor-pointer font-medium">
-              По какому курсу происходит обмен рублей?
-            </summary>
-            <p className="mt-2 text-sm">
-              Обмен происходит по актуальному курсу RUB/KZT без скрытых комиссий.
-              Курс фиксируется при подтверждении заявки.
-            </p>
-          </details>
+    <p>
+      <strong>По какому курсу происходит обмен?</strong><br />
+      Обмен происходит по актуальному курсу RUB/KZT (народного банка Казахстана Halyk) без комиссий.
+      Курс отображается перед оформлением заявки и фиксируется на момент подтверждения. Данное преложение не яляется публичной офертой.
+    </p>
 
-          <details>
-            <summary className="cursor-pointer font-medium">
-              Можно ли обменять рубли в тенге онлайн?
-            </summary>
-            <p className="mt-2 text-sm">
-              Да, расчёт и оформление заявки на обмен рублей в тенге происходят полностью онлайн.
-            </p>
-          </details>
-        </section>
+    <p>
+      <strong>Можно ли обменять тенге на рубли онлайн?</strong><br />
+      Да. Вы можете рассчитать сумму через калькулятор и оставить заявку полностью онлайн,
+      без визита в офис и поездок банк.
+    </p>
 
-        {/* CONTACTS */}
-        <button
-          onClick={() => setShowContacts(!showContacts)}
-          className="text-sm underline text-center w-full"
-        >
-          Реквизиты и контакты
-        </button>
-
-        {showContacts && (
-          <div className="text-sm text-muted-foreground text-center">
-            ИП: Туев М.А.<br />
-            ИНН: 542500854540<br />
-            Телефон / WhatsApp: +7 913 466-66-95
-          </div>
-        )}
-
+    <p>
+      <strong>Какие данные нужны для обмена?</strong><br />
+      Для оформления заявки потребуется имя и контактный телефон для связи.
+      Реквизиты для перевода уточняются после подтверждения заявки.
+    </p>
+  </div>
+</section>
       </div>
     </main>
   )
