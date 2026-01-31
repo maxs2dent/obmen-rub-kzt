@@ -3,13 +3,37 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
+const geist = Geist({ subsets: ['latin'] })
+const geistMono = Geist_Mono({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.app',
+  title: 'Обмен рублей на тенге — актуальный курс RUB/KZT онлайн',
+  description:
+    'Онлайн обмен рублей на тенге и тенге на рубли по актуальному курсу RUB/KZT. Быстрый расчёт суммы и заявка на обмен за 1 минуту.',
+  keywords: [
+    'обмен рублей на тенге',
+    'обмен тенге на рубли',
+    'курс рубль тенге',
+    'RUB KZT',
+    'курс RUB KZT',
+    'обмен валют рубль тенге',
+  ],
+  alternates: {
+    canonical: 'https://obmen-rub-kzt.ru/',
+  },
+  openGraph: {
+    title: 'Обмен рублей на тенге — курс RUB/KZT',
+    description:
+      'Узнай актуальный курс рубля к тенге. Рассчитай сумму обмена и оставь заявку онлайн.',
+    url: 'https://obmen-rub-kzt.ru/',
+    siteName: 'Обмен RUB ⇄ KZT',
+    locale: 'ru_RU',
+    type: 'website',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
   icons: {
     icon: [
       {
@@ -31,12 +55,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode
-}>) {
+}) {
   return (
-    <html lang="en">
-      <body className={`font-sans antialiased`}>
+    <html lang="ru">
+      <body
+        className={`${geist.className} ${geistMono.className} antialiased`}
+      >
         {children}
         <Analytics />
       </body>
