@@ -98,7 +98,7 @@ export default function ExchangePage() {
         {/* SEO BLOCK */}
 <header className="space-y-2 text-center">
   <h1 className="text-2xl font-bold text-foreground">
-    Быстрый обмен ТЕНге и РУБлей
+    Быстрый обмен тенге и рублей
   </h1>
   <p className="text-sm text-muted-foreground">
     Онлайн обмен KZT ⇄ RUB по актуальному курсу.
@@ -108,9 +108,20 @@ export default function ExchangePage() {
 </header>
 
         <h2 className="sr-only">
-          Курс тенге рубль на сегодня
+          Курс тенге к рублю на сегодня
         </h2>
 
+          <p className="text-sm text-muted-foreground">
+          Курс рубля к тенге меняется в течение дня и зависит от ситуации на валютном рынке.
+          Используйте калькулятор ниже, чтобы узнать, сколько рублей вы получите при обмене тенге
+          по актуальному курсу.
+        </p>
+
+        {/* Hidden SEO anchor */}
+        <h3 className="sr-only">
+          Сколько тенге в рублях сегодня
+        </h3>
+        
         {/* Direction selector */}
         <div className="flex gap-2">
           <button
