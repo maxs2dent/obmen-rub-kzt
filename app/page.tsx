@@ -158,7 +158,7 @@ export default function ExchangePage() {
             className="w-full p-3 border border-border rounded-lg bg-background text-foreground text-lg"
           />
         </div>
-
+        
 {/* Result */}
 {numAmount > 0 && (
   <div className="bg-primary/10 p-4 rounded-lg space-y-2">
@@ -181,6 +181,7 @@ export default function ExchangePage() {
     </p>
   </div>
 )}
+
 {/* CTA: Оставить заявку */}
 {numAmount > 0 && !showForm && !submitted && (
   <button
