@@ -197,7 +197,7 @@ export default function ExchangePage() {
 
         {submitted && (
           <div className="bg-green-100 p-4 rounded-lg text-center">
-            Заявка принята. Перевод рублей в тенге будет выполнен в течение 1–5 минут.
+            Заявка принята. С важи свяжется наш менеджер для уточнения деталей и выполнит перевод.
           </div>
         )}
 
