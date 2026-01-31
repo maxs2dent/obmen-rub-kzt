@@ -103,11 +103,12 @@ export default function ExchangePage() {
   <p className="text-sm text-muted-foreground">
     Онлайн обмен KZT ⇄ RUB по актуальному курсу.
     После подтверждения заявки деньги поступают на Вашу карту
-    <strong> в течение 1–5 минут</strong>.
+    <strong> в течение 1–5 минут</strong> после подтверждения заявки.
   </p>
 </header>
 
-        <h2 className="sr-only">
+        {/* SEO H2 */}
+        <h2 className="text-base font-semibold text-foreground mt-6">
           Курс тенге к рублю на сегодня
         </h2>
 
