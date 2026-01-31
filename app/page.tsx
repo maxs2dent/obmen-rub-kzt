@@ -98,11 +98,11 @@ export default function ExchangePage() {
         {/* SEO BLOCK */}
 <header className="space-y-2 text-center">
   <h1 className="text-2xl font-bold text-foreground">
-    Обмен рублей и тенге — деньги сразу на Вашу карту
+    Быстрый обмен рублей и тенге
   </h1>
   <p className="text-sm text-muted-foreground">
     Быстрый онлайн обмен RUB ⇄ KZT по актуальному курсу.
-    После подтверждения заявки деньги поступают на карту
+    После подтверждения заявки деньги поступают на Вашу карту
     <strong> в течение 1–5 минут</strong>.
   </p>
 </header>
