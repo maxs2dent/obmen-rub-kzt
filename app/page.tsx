@@ -10,7 +10,6 @@ export default function ExchangePage() {
   const [amount, setAmount] = useState<string>("")
   const [baseRate, setBaseRate] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
-
   const [showForm, setShowForm] = useState(false)
   const [name, setName] = useState("")
   const [phone, setPhone] = useState("")
@@ -22,7 +21,8 @@ export default function ExchangePage() {
       try {
         const res = await fetch("https://api.exchangerate-api.com/v4/latest/RUB")
         const data = await res.json()
-        setBaseRate(data.rates.KZT)
+        const kztPerRub = data.rates.KZT
+        setBaseRate(kztPerRub)
       } catch {
         setBaseRate(6.54)
       } finally {
@@ -34,20 +34,26 @@ export default function ExchangePage() {
 
   const getRate = useCallback(() => {
     if (!baseRate) return 0
-    return Math.round(baseRate * 1.025 * 100) / 100
-  }, [baseRate])
+    if (direction === "kzt_to_rub") {
+      return Math.round(baseRate * 1.025 * 100) / 100
+    } else {
+      return Math.round(baseRate * 0.963 * 100) / 100
+    }
+  }, [baseRate, direction])
 
   const rate = getRate()
   const numAmount = Number.parseFloat(amount) || 0
 
   const result =
-    numAmount > 0 ? Math.round((numAmount / rate) * 100) / 100 : 0
+    direction === "kzt_to_rub"
+      ? Math.round((numAmount / rate) * 100) / 100
+      : Math.round(numAmount * rate * 100) / 100
+
+  const giveCurrency = direction === "kzt_to_rub" ? "KZT" : "RUB"
+  const getCurrency = direction === "kzt_to_rub" ? "RUB" : "KZT"
 
   const formatNumber = (n: number) =>
-    n.toLocaleString("ru-RU", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })
+    n.toLocaleString("ru-RU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -61,15 +67,17 @@ export default function ExchangePage() {
         body: JSON.stringify({
           name: name.trim(),
           phone: phone.trim(),
-          direction: "KZT → RUB",
+          direction: direction === "kzt_to_rub" ? "KZT → RUB" : "RUB → KZT",
           rate,
           giveAmount: numAmount,
-          giveCurrency: "KZT",
+          giveCurrency,
           getAmount: result,
-          getCurrency: "RUB",
+          getCurrency,
         }),
       })
       setSubmitted(true)
+    } catch {
+      alert("Ошибка отправки")
     } finally {
       setSubmitting(false)
     }
@@ -77,8 +85,8 @@ export default function ExchangePage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen flex items-center justify-center">
-        Загрузка курса…
+      <main className="min-h-screen flex items-center justify-center bg-background">
+        <p className="text-foreground">Загрузка курса...</p>
       </main>
     )
   }
@@ -87,103 +95,156 @@ export default function ExchangePage() {
     <main className="min-h-screen bg-background p-4">
       <div className="max-w-md mx-auto space-y-6">
 
-        {/* HERO */}
-        <header className="text-center space-y-2">
-          <h1 className="text-2xl font-bold">
-            Обмен тенге на рубли онлайн
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Актуальный курс KZT → RUB.  
-            Перевод на карту <strong>в течение 1–5 минут</strong>.
-          </p>
-        </header>
+        {/* SEO BLOCK */}
+<header className="space-y-2 text-center">
+  <h1 className="text-2xl font-bold text-foreground">
+    Быстрый обмен рублей и тенге
+  </h1>
+  <p className="text-sm text-muted-foreground">
+    Онлайн обмен RUB ⇄ KZT по актуальному курсу.
+    После подтверждения заявки деньги поступают на Вашу карту
+    <strong> в течение 1–5 минут</strong>.
+  </p>
+</header>
 
-        {/* SWITCH */}
+        <h2 className="sr-only">
+          Курс рубль тенге на сегодня
+        </h2>
+
+        {/* Direction selector */}
         <div className="flex gap-2">
           <button
             onClick={() => setDirection("kzt_to_rub")}
-            className="flex-1 py-3 rounded-lg bg-primary text-white"
+            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${
+              direction === "kzt_to_rub"
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground"
+            }`}
           >
             Купить рубли
           </button>
-          <a
-            href="/rub-v-kzt"
-            className="flex-1 py-3 rounded-lg bg-muted text-center"
+          <button
+            onClick={() => setDirection("rub_to_kzt")}
+            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${
+              direction === "rub_to_kzt"
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground"
+            }`}
           >
             Купить тенге
-          </a>
+          </button>
         </div>
 
-        {/* RATE */}
+        {/* Rate display */}
         <div className="bg-muted p-4 rounded-lg text-center">
-          <p className="text-sm">Курс</p>
-          <p className="text-xl font-bold">
-            1 RUB = {formatNumber(rate)} KZT
+          <p className="text-sm text-muted-foreground">Курс</p>
+          <p className="text-2xl font-bold text-foreground">
+            1 {direction === "kzt_to_rub" ? "RUB" : "KZT"} = {formatNumber(rate)}{" "}
+            {direction === "kzt_to_rub" ? "KZT" : "RUB"}
           </p>
         </div>
 
-        {/* INPUT */}
-        <input
-          type="number"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          placeholder="Введите сумму в тенге"
-          className="w-full p-3 border rounded-lg"
-        />
+        {/* Amount input */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-foreground">
+            Вы отдаёте ({giveCurrency})
+          </label>
+          <input
+            type="number"
+            inputMode="decimal"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            placeholder="Введите сумму"
+            className="w-full p-3 border border-border rounded-lg bg-background text-foreground text-lg"
+          />
+        </div>
 
-        {/* RESULT */}
-        {numAmount > 0 && (
-          <div className="bg-primary/10 p-4 rounded-lg space-y-1">
-            <p>
-              Вы отдаёте:{" "}
-              <strong>{formatNumber(numAmount)} KZT</strong>
-            </p>
-            <p>
-              Курс: <strong>{formatNumber(rate)}</strong>
-            </p>
-            <p className="text-lg">
-              Вы получите:{" "}
-              <strong>{formatNumber(result)} RUB</strong>
-            </p>
-          </div>
-        )}
+{/* Result */}
+{numAmount > 0 && (
+  <div className="bg-primary/10 p-4 rounded-lg space-y-2">
+    <p className="text-foreground">
+      Вы отдаёте:{" "}
+      <strong>
+        {formatNumber(numAmount)} {giveCurrency}
+      </strong>
+    </p>
 
-        {!showForm && numAmount > 0 && (
-          <button
-            onClick={() => setShowForm(true)}
-            className="w-full py-3 bg-primary text-white rounded-lg"
-          >
-            Оставить заявку
-          </button>
-        )}
+    <p className="text-foreground">
+      Курс: <strong>{formatNumber(rate)}</strong>
+    </p>
+
+    <p className="text-foreground text-lg">
+      Вы получите:{" "}
+      <strong>
+        {formatNumber(result)} {getCurrency}
+      </strong>
+    </p>
+  </div>
+)}
+
 
         {showForm && !submitted && (
-          <form onSubmit={handleSubmit} className="space-y-3 bg-muted p-4 rounded-lg">
+          <form onSubmit={handleSubmit} className="space-y-4 bg-muted p-4 rounded-lg">
             <input
               placeholder="Имя"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="w-full p-3 rounded-lg"
+              className="w-full p-3 border rounded-lg"
             />
             <input
-              placeholder="Телефон / WhatsApp"
+              placeholder="Телефон"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               required
-              className="w-full p-3 rounded-lg"
+              className="w-full p-3 border rounded-lg"
             />
-            <button className="w-full py-3 bg-primary text-white rounded-lg">
-              {submitting ? "Отправка…" : "Отправить заявку"}
+            <button
+              type="submit"
+              disabled={submitting}
+              className="w-full py-3 bg-primary text-primary-foreground rounded-lg"
+            >
+              {submitting ? "Отправка..." : "Отправить заявку"}
             </button>
           </form>
         )}
 
         {submitted && (
-          <div className="bg-green-100 p-4 rounded-lg text-center">
-            Заявка принята. Перевод поступит в течение 1–5 минут.
+          <div className="bg-green-100 text-green-800 p-4 rounded-lg text-center">
+            Заявка принята. Мы свяжемся с вами.
           </div>
         )}
+<section className="mt-10 space-y-4">
+  <h2 className="text-lg font-semibold text-foreground">
+    Часто задаваемые вопросы
+  </h2>
+
+  <div className="space-y-3 text-sm text-muted-foreground">
+    <p>
+      <strong>Сколько времени занимает перевод денег?</strong><br />
+      После подтверждения заявки перевод на карту обычно занимает от 1 до 5 минут.
+      В редких случаях время может увеличиться из-за банка получателя.
+    </p>
+
+    <p>
+      <strong>По какому курсу происходит обмен?</strong><br />
+      Обмен происходит по актуальному курсу RUB/KZT (народного банка Казахстана Halyk) без комиссий.
+      Курс отображается перед оформлением заявки и фиксируется на момент подтверждения. Данное преложение не яляется публичной офертой.
+    </p>
+
+    <p>
+      <strong>Можно ли обменять тенге на рубли онлайн?</strong><br />
+      Да. Вы можете рассчитать сумму через калькулятор и оставить заявку полностью онлайн,
+      без визита в офис и поездок банк.
+    </p>
+
+    <p>
+      <strong>Какие данные нужны для обмена?</strong><br />
+      Для оформления заявки потребуется имя и контактный телефон для связи.
+      Реквизиты для перевода уточняются после подтверждения заявки.
+    </p>
+  </div>
+</section>
       </div>
     </main>
   )
