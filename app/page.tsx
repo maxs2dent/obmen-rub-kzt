@@ -98,7 +98,7 @@ export default function ExchangePage() {
         {/* SEO BLOCK */}
 <header className="space-y-2 text-center">
   <h1 className="text-2xl font-bold text-foreground">
-    Обмен тенге и рубли — актуальный курс KZT к RUB сегодня
+    Быстрый обмен рублей и тенге
   </h1>
   <p className="text-sm text-muted-foreground">
     Онлайн обмен RUB ⇄ KZT по актуальному курсу.
