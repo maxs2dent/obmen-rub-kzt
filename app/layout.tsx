@@ -65,6 +65,49 @@ export default function RootLayout({
       >
         {children}
         <Analytics />
+      <script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{
+    __html: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "Сколько времени занимает перевод денег?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "После подтверждения заявки перевод на карту обычно занимает от 1 до 5 минут."
+          }
+        },
+        {
+          "@type": "Question",
+          name: "По какому курсу происходит обмен?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Обмен происходит по актуальному курсу RUB/KZT с учётом спреда, который отображается перед оформлением заявки."
+          }
+        },
+        {
+          "@type": "Question",
+          name: "Можно ли обменять тенге на рубли онлайн?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Да, обмен возможен полностью онлайн через калькулятор и форму заявки."
+          }
+        },
+        {
+          "@type": "Question",
+          name: "Какие данные нужны для обмена?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Для оформления заявки требуется имя и контактный телефон."
+          }
+        }
+      ]
+    })
+  }}
+/>
       </body>
     </html>
   )
