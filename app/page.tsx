@@ -217,20 +217,19 @@ export default function ExchangePage() {
         </section>
 
         {/* CONTACTS */}
-<button
-  onClick={() => setShowDetails(!showDetails)}
-  className="text-sm text-muted-foreground underline"
->
-  Реквизиты и контакты
-</button>
+        <button
+          onClick={() => setShowContacts(!showContacts)}
+          className="text-sm underline text-center w-full"
+        >
+          Реквизиты и контакты
+        </button>
 
-{showDetails && (
-  <div className="text-sm text-muted-foreground space-y-1">
-    <p>ИП: Иванов Иван Иванович</p>
-    <p>ИНН: XXXXXXXX</p>
-    <p>Телефон / WhatsApp: +7 XXX XXX-XX-XX</p>
-  </div>
-)}
+        {showContacts && (
+          <div className="text-sm text-muted-foreground text-center">
+            ИП: (данные можно указать здесь)<br />
+            WhatsApp: +7 XXX XXX-XX-XX
+          </div>
+        )}
       </div>
     </main>
   )
