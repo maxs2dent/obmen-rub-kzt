@@ -96,15 +96,16 @@ export default function ExchangePage() {
       <div className="max-w-md mx-auto space-y-6">
 
         {/* SEO BLOCK */}
-        <header className="space-y-2 text-center">
-          <h1 className="text-2xl font-bold text-foreground">
-            Обмен рублей на тенге по актуальному курсу
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Онлайн расчёт курса RUB/KZT. Узнай, сколько тенге или рублей ты получишь,
-            и оставь заявку на обмен за 1 минуту.
-          </p>
-        </header>
+<header className="space-y-2 text-center">
+  <h1 className="text-2xl font-bold text-foreground">
+    Обмен рублей и тенге с переводом на Вашу карту за 1–5 минут
+  </h1>
+  <p className="text-sm text-muted-foreground">
+    Быстрый онлайн обмен RUB ⇄ KZT по актуальному курсу.
+    После подтверждения заявки деньги поступают на карту
+    <strong> в течение 1–5 минут</strong>.
+  </p>
+</header>
 
         <h2 className="sr-only">
           Курс рубль тенге на сегодня
