@@ -181,8 +181,15 @@ export default function ExchangePage() {
     </p>
   </div>
 )}
-
-
+{/* CTA: Оставить заявку */}
+{numAmount > 0 && !showForm && !submitted && (
+  <button
+    onClick={() => setShowForm(true)}
+    className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-medium"
+  >
+    Оставить заявку
+  </button>
+)}
         {showForm && !submitted && (
           <form onSubmit={handleSubmit} className="space-y-4 bg-muted p-4 rounded-lg">
             <input
