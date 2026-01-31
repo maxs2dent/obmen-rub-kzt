@@ -180,7 +180,7 @@ export default function ExchangePage() {
             onClick={() => setShowForm(true)}
             className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-medium"
           >
-            Оставить заявку
+            Получить перевод
           </button>
         )}
 
