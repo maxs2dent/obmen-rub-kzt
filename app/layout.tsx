@@ -9,20 +9,21 @@ const geistMono = Geist_Mono({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'Тенге в рубли — курс KZT ⇄ RUB сегодня, онлайн калькулятор',
   description:
-    'Онлайн обмен рублей на тенге и тенге на рубли по актуальному курсу RUB/KZT. Быстрый расчёт и зачисление на Вашу карту в течение 1–5 минут.',
+    'Онлайн обмен рублей на тенге и тенге на рубли по актуальному курсу RUB/KZT. Быстрый расчёт и зачисление на карту в течение 1–5 минут.',
   keywords: [
+    'тенге в рубли',
+    'курс тенге к рублю',
     'обмен рублей на тенге',
     'обмен тенге на рубли',
-    'курс рубль тенге',
     'RUB KZT',
     'курс RUB KZT',
-    'обмен валют рубль тенге',
+    'онлайн обмен валют',
   ],
   alternates: {
     canonical: 'https://obmen-rub-kzt.ru/',
   },
   openGraph: {
-    title: 'Обмен рублей на тенге — курс RUB/KZT',
+    title: 'Обмен рублей и тенге — курс RUB ⇄ KZT онлайн',
     description:
       'Узнай актуальный курс рубля к тенге. Рассчитай сумму обмена и оставь заявку онлайн.',
     url: 'https://obmen-rub-kzt.ru/',
@@ -60,54 +61,60 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ru">
-      <body
-        className={`${geist.className} ${geistMono.className} antialiased`}
-      >
+      <body className={`${geist.className} ${geistMono.className} antialiased`}>
         {children}
         <Analytics />
-      <script
-  type="application/ld+json"
-  dangerouslySetInnerHTML={{
-    __html: JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: [
-        {
-          "@type": "Question",
-          name: "Сколько времени занимает перевод денег?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "После подтверждения заявки перевод на карту обычно занимает от 1 до 5 минут."
-          }
-        },
-        {
-          "@type": "Question",
-          name: "По какому курсу происходит обмен?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Обмен происходит по актуальному курсу RUB/KZT с учётом спреда, который отображается перед оформлением заявки."
-          }
-        },
-        {
-          "@type": "Question",
-          name: "Можно ли обменять тенге на рубли онлайн?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Да, обмен возможен полностью онлайн через калькулятор и форму заявки."
-          }
-        },
-        {
-          "@type": "Question",
-          name: "Какие данные нужны для обмена?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Для оформления заявки требуется имя и контактный телефон."
-          }
-        }
-      ]
-    })
-  }}
-/>
+
+        {/* FAQ Schema */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              "@id": "https://obmen-rub-kzt.ru/#faq",
+              inLanguage: "ru",
+              mainEntity: [
+                {
+                  "@type": "Question",
+                  name: "Сколько времени занимает перевод денег?",
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text:
+                      "После подтверждения заявки перевод средств на карту обычно занимает от 1 до 5 минут. В отдельных случаях время может зависеть от банка получателя."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  name: "По какому курсу происходит обмен рублей и тенге?",
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text:
+                      "Обмен происходит по актуальному курсу RUB/KZT, который отображается перед оформлением заявки и фиксируется на момент подтверждения."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  name: "Можно ли обменять тенге на рубли онлайн?",
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text:
+                      "Да, вы можете рассчитать сумму через онлайн-калькулятор и оставить заявку на обмен полностью онлайн, без визита в офис."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  name: "Какие данные нужны для оформления заявки на обмен?",
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text:
+                      "Для оформления заявки достаточно указать имя и контактный телефон. Остальные детали уточняются после подтверждения."
+                  }
+                }
+              ]
+            }),
+          }}
+        />
       </body>
     </html>
   )
