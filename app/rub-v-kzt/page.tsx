@@ -155,14 +155,27 @@ export default function ExchangePage() {
         />
 
         {/* Result */}
-        {numAmount > 0 && (
-          <div className="bg-primary/10 p-4 rounded-lg">
-            <p>
-              Вы получите:{" "}
-              <strong>{formatNumber(result)} {getCurrency}</strong>
-            </p>
-          </div>
-        )}
+{numAmount > 0 && (
+  <div className="bg-primary/10 p-4 rounded-lg space-y-2">
+    <p className="text-foreground">
+      Вы отдаёте:{" "}
+      <strong>
+        {formatNumber(numAmount)} {giveCurrency}
+      </strong>
+    </p>
+
+    <p className="text-foreground">
+      Курс: <strong>{formatNumber(rate)}</strong>
+    </p>
+
+    <p className="text-foreground text-lg">
+      Вы получите:{" "}
+      <strong>
+        {formatNumber(result)} {getCurrency}
+      </strong>
+    </p>
+  </div>
+)}
 
         {!showForm && numAmount > 0 && (
           <button
