@@ -100,8 +100,15 @@ export default function ExchangePage() {
           </p>
         </header>
 
-        <h2 className="sr-only">Курс рубль тенге на сегодня</h2>
+        <h2 className="text-base font-semibold text-foreground mt-8">
+  Курс рубля к тенге на сегодня
+</h2>
 
+<p className="text-sm text-muted-foreground">
+  Курс рубля к тенге обновляется в режиме онлайн и зависит от рыночной ситуации.
+  Используйте калькулятор выше, чтобы рассчитать, сколько тенге вы получите при
+  обмене рублей по текущему курсу.
+</p>
         {/* Direction */}
         <div className="flex gap-2">
           <button
