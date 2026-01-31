@@ -101,7 +101,7 @@ export default function ExchangePage() {
     Обмен тенге и рубли — актуальный курс KZT к RUB сегодня
   </h1>
   <p className="text-sm text-muted-foreground">
-    Быстрый онлайн обмен RUB ⇄ KZT по актуальному курсу.
+    Онлайн обмен RUB ⇄ KZT по актуальному курсу.
     После подтверждения заявки деньги поступают на Вашу карту
     <strong> в течение 1–5 минут</strong>.
   </p>
