@@ -1,1 +1,4 @@
+User-agent: *
+Allow: /
 
+Sitemap: https://obmen-rub-kzt.ru/sitemap.xml
