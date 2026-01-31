@@ -95,20 +95,27 @@ export default function ExchangePage() {
             Рубли в тенге — быстрый онлайн-обмен
           </h1>
           <p className="text-sm text-muted-foreground">
-            Онлайн обмен RUB ⇄ KZT по актуальному курсу.  
-            Деньги поступают на карту <strong>за 1–5 минут</strong>.
+            Онлайн обмен рублей в тенге по актуальному курсу.
+            Перевод на карту <strong>в течение 1–5 минут</strong> после подтверждения заявки.
           </p>
         </header>
 
-        <h2 className="text-base font-semibold text-foreground mt-8">
-  Курс рубля к тенге на сегодня
-</h2>
+        {/* SEO H2 */}
+        <h2 className="text-base font-semibold text-foreground mt-6">
+          Курс рубля к тенге на сегодня
+        </h2>
 
-<p className="text-sm text-muted-foreground">
-  Курс рубля к тенге обновляется в режиме онлайн и зависит от рыночной ситуации.
-  Используйте калькулятор выше, чтобы рассчитать, сколько тенге вы получите при
-  обмене рублей по текущему курсу.
-</p>
+        <p className="text-sm text-muted-foreground">
+          Курс рубля к тенге меняется в течение дня и зависит от ситуации на валютном рынке.
+          Используйте калькулятор выше, чтобы узнать, сколько тенге вы получите при обмене рублей
+          по актуальному курсу.
+        </p>
+
+        {/* Hidden SEO anchor */}
+        <h3 className="sr-only">
+          Сколько рублей в тенге сегодня
+        </h3>
+
         {/* Direction */}
         <div className="flex gap-2">
           <button
@@ -150,7 +157,10 @@ export default function ExchangePage() {
         {/* Result */}
         {numAmount > 0 && (
           <div className="bg-primary/10 p-4 rounded-lg">
-            <p>Вы получите: <strong>{formatNumber(result)} {getCurrency}</strong></p>
+            <p>
+              Вы получите:{" "}
+              <strong>{formatNumber(result)} {getCurrency}</strong>
+            </p>
           </div>
         )}
 
@@ -187,38 +197,39 @@ export default function ExchangePage() {
 
         {submitted && (
           <div className="bg-green-100 p-4 rounded-lg text-center">
-            Заявка принята. Деньги поступят в течение 1–5 минут.
+            Заявка принята. Перевод рублей в тенге будет выполнен в течение 1–5 минут.
           </div>
         )}
 
-        {/* FAQ ACCORDION */}
+        {/* FAQ */}
         <section className="pt-8">
           <h2 className="font-semibold mb-3">Часто задаваемые вопросы</h2>
 
           <details>
             <summary className="cursor-pointer font-medium">
-              Сколько времени занимает перевод?
+              Сколько времени занимает перевод рублей в тенге?
             </summary>
             <p className="mt-2 text-sm">
-              Обычно перевод на карту занимает от 1 до 5 минут после подтверждения заявки.
+              После подтверждения заявки перевод рублей в тенге обычно занимает от 1 до 5 минут.
             </p>
           </details>
 
           <details>
             <summary className="cursor-pointer font-medium">
-              По какому курсу происходит обмен?
+              По какому курсу происходит обмен рублей?
             </summary>
             <p className="mt-2 text-sm">
-              По актуальному курсу RUB/KZT без скрытых комиссий. Курс фиксируется при подтверждении.
+              Обмен происходит по актуальному курсу RUB/KZT без скрытых комиссий.
+              Курс фиксируется при подтверждении заявки.
             </p>
           </details>
 
           <details>
             <summary className="cursor-pointer font-medium">
-              Можно ли обменять тенге на рубли онлайн?
+              Можно ли обменять рубли в тенге онлайн?
             </summary>
             <p className="mt-2 text-sm">
-              Да, расчёт и заявка оформляются полностью онлайн.
+              Да, расчёт и оформление заявки на обмен рублей в тенге происходят полностью онлайн.
             </p>
           </details>
         </section>
@@ -234,10 +245,11 @@ export default function ExchangePage() {
         {showContacts && (
           <div className="text-sm text-muted-foreground text-center">
             ИП: Туев М.А.<br />
-            ИНН: 542500854540
+            ИНН: 542500854540<br />
             Телефон / WhatsApp: +7 913 466-66-95
           </div>
         )}
+
       </div>
     </main>
   )
