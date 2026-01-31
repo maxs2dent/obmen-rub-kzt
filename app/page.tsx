@@ -226,8 +226,9 @@ export default function ExchangePage() {
 
         {showContacts && (
           <div className="text-sm text-muted-foreground text-center">
-            ИП: (данные можно указать здесь)<br />
-            WhatsApp: +7 XXX XXX-XX-XX
+            ИП: Туев М.А.<br />
+            ИНН: 542500854540
+            Телефон / WhatsApp: +7 913 466-66-95
           </div>
         )}
       </div>
