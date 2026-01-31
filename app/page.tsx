@@ -3,10 +3,10 @@
 import type React from "react"
 import { useState, useEffect, useCallback } from "react"
 
-type Direction = "kzt_to_rub" | "rub_to_kzt"
+type Direction = "rub_to_kzt" | "kzt_to_rub"
 
 export default function ExchangePage() {
-  const [direction, setDirection] = useState<Direction>("kzt_to_rub")
+  const [direction, setDirection] = useState<Direction>("rub_to_kzt")
   const [amount, setAmount] = useState<string>("")
   const [baseRate, setBaseRate] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
@@ -34,23 +34,13 @@ export default function ExchangePage() {
     fetchRate()
   }, [])
 
-  const getRate = useCallback(() => {
+  const rate = useCallback(() => {
     if (!baseRate) return 0
-    return direction === "kzt_to_rub"
-      ? Math.round(baseRate * 1.025 * 100) / 100
-      : Math.round(baseRate * 0.963 * 100) / 100
-  }, [baseRate, direction])
+    return Math.round(baseRate * 0.963 * 100) / 100
+  }, [baseRate])()
 
-  const rate = getRate()
   const numAmount = Number.parseFloat(amount) || 0
-
-  const result =
-    direction === "kzt_to_rub"
-      ? Math.round((numAmount / rate) * 100) / 100
-      : Math.round(numAmount * rate * 100) / 100
-
-  const giveCurrency = direction === "kzt_to_rub" ? "KZT" : "RUB"
-  const getCurrency = direction === "kzt_to_rub" ? "RUB" : "KZT"
+  const result = Math.round(numAmount * rate * 100) / 100
 
   const formatNumber = (n: number) =>
     n.toLocaleString("ru-RU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -67,12 +57,12 @@ export default function ExchangePage() {
         body: JSON.stringify({
           name,
           phone,
-          direction,
+          direction: "RUB → KZT",
           rate,
           giveAmount: numAmount,
-          giveCurrency,
+          giveCurrency: "RUB",
           getAmount: result,
-          getCurrency,
+          getCurrency: "KZT",
         }),
       })
       setSubmitted(true)
@@ -92,42 +82,28 @@ export default function ExchangePage() {
         {/* HERO */}
         <header className="text-center space-y-2">
           <h1 className="text-2xl font-bold">
-            Быстрый обмен рублей и тенге
+            Обмен рублей на тенге онлайн
           </h1>
           <p className="text-sm text-muted-foreground">
-            Онлайн обмен RUB ⇄ KZT по актуальному курсу.  
-            Деньги поступают на карту <strong>за 1–5 минут</strong>.
+            Актуальный курс RUB → KZT.  
+            Перевод на карту <strong>в течение 1–5 минут</strong> после подтверждения заявки.
           </p>
         </header>
 
-        <h2 className="sr-only">Курс рубль тенге на сегодня</h2>
-
-        {/* Direction */}
-        <div className="flex gap-2">
-          <button
-            onClick={() => setDirection("kzt_to_rub")}
-            className={`flex-1 py-3 rounded-lg ${
-              direction === "kzt_to_rub" ? "bg-primary text-white" : "bg-muted"
-            }`}
-          >
-            Купить рубли
-          </button>
-          <button
-            onClick={() => setDirection("rub_to_kzt")}
-            className={`flex-1 py-3 rounded-lg ${
-              direction === "rub_to_kzt" ? "bg-primary text-white" : "bg-muted"
-            }`}
-          >
-            Купить тенге
-          </button>
-        </div>
+        {/* Rate info */}
+        <h2 className="text-base font-semibold mt-6">
+          Курс рубля к тенге на сегодня
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Курс обновляется онлайн. Используйте калькулятор ниже,
+          чтобы рассчитать сумму перевода рублей в тенге по текущему курсу.
+        </p>
 
         {/* Rate */}
         <div className="bg-muted p-4 rounded-lg text-center">
           <p className="text-sm">Курс</p>
           <p className="text-xl font-bold">
-            1 {direction === "kzt_to_rub" ? "RUB" : "KZT"} = {formatNumber(rate)}{" "}
-            {direction === "kzt_to_rub" ? "KZT" : "RUB"}
+            1 RUB = {formatNumber(rate)} KZT
           </p>
         </div>
 
@@ -136,14 +112,22 @@ export default function ExchangePage() {
           type="number"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          placeholder={`Введите сумму (${giveCurrency})`}
+          placeholder="Введите сумму (RUB)"
           className="w-full p-3 border rounded-lg"
         />
 
-        {/* Result */}
+        {/* RESULT — ИСПРАВЛЕННЫЙ БЛОК */}
         {numAmount > 0 && (
-          <div className="bg-primary/10 p-4 rounded-lg">
-            <p>Вы получите: <strong>{formatNumber(result)} {getCurrency}</strong></p>
+          <div className="bg-primary/10 p-4 rounded-lg space-y-1">
+            <p>
+              Вы отдаёте: <strong>{formatNumber(numAmount)} RUB</strong>
+            </p>
+            <p>
+              Курс: <strong>{formatNumber(rate)}</strong>
+            </p>
+            <p className="text-lg">
+              Вы получите: <strong>{formatNumber(result)} KZT</strong>
+            </p>
           </div>
         )}
 
@@ -152,7 +136,7 @@ export default function ExchangePage() {
             onClick={() => setShowForm(true)}
             className="w-full py-3 bg-primary text-white rounded-lg"
           >
-            Получить перевод
+            Оставить заявку
           </button>
         )}
 
@@ -162,15 +146,15 @@ export default function ExchangePage() {
               placeholder="Имя"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full p-3 rounded-lg"
               required
+              className="w-full p-3 rounded-lg"
             />
             <input
               placeholder="Телефон / WhatsApp"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full p-3 rounded-lg"
               required
+              className="w-full p-3 rounded-lg"
             />
             <button className="w-full py-3 bg-primary text-white rounded-lg">
               {submitting ? "Отправка…" : "Отправить заявку"}
@@ -184,7 +168,7 @@ export default function ExchangePage() {
           </div>
         )}
 
-        {/* FAQ ACCORDION */}
+        {/* FAQ */}
         <section className="pt-8">
           <h2 className="font-semibold mb-3">Часто задаваемые вопросы</h2>
 
@@ -193,7 +177,7 @@ export default function ExchangePage() {
               Сколько времени занимает перевод?
             </summary>
             <p className="mt-2 text-sm">
-              Обычно перевод на карту занимает от 1 до 5 минут после подтверждения заявки.
+              Обычно перевод занимает от 1 до 5 минут после подтверждения заявки.
             </p>
           </details>
 
@@ -202,32 +186,23 @@ export default function ExchangePage() {
               По какому курсу происходит обмен?
             </summary>
             <p className="mt-2 text-sm">
-              По актуальному курсу RUB/KZT без скрытых комиссий. Курс фиксируется при подтверждении.
-            </p>
-          </details>
-
-          <details>
-            <summary className="cursor-pointer font-medium">
-              Можно ли обменять тенге на рубли онлайн?
-            </summary>
-            <p className="mt-2 text-sm">
-              Да, расчёт и заявка оформляются полностью онлайн.
+              По актуальному курсу RUB/KZT без скрытых комиссий.
             </p>
           </details>
         </section>
 
-        {/* CONTACTS */}
+        {/* Contacts */}
         <button
           onClick={() => setShowContacts(!showContacts)}
-          className="text-sm underline text-center w-full"
+          className="text-sm underline w-full text-center"
         >
           Реквизиты и контакты
         </button>
 
         {showContacts && (
           <div className="text-sm text-muted-foreground text-center">
-            ИП: Туев М.А.<br />
-            ИНН: 542500854540
+            ИП Туев М.А.<br />
+            ИНН: 542500854540<br />
             Телефон / WhatsApp: +7 913 466-66-95
           </div>
         )}
