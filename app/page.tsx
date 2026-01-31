@@ -3,7 +3,7 @@
 import type React from "react"
 import { useState, useEffect, useCallback } from "react"
 
-type Direction = "rub_to_kzt" | "kzt_to_rub"
+type Direction = "kzt_to_rub" | "rub_to_kzt"
 
 export default function ExchangePage() {
   const [direction, setDirection] = useState<Direction>("rub_to_kzt")
@@ -12,8 +12,6 @@ export default function ExchangePage() {
   const [loading, setLoading] = useState(true)
 
   const [showForm, setShowForm] = useState(false)
-  const [showContacts, setShowContacts] = useState(false)
-
   const [name, setName] = useState("")
   const [phone, setPhone] = useState("")
   const [submitting, setSubmitting] = useState(false)
@@ -34,11 +32,12 @@ export default function ExchangePage() {
     fetchRate()
   }, [])
 
-  const rate = useCallback(() => {
+  const getRate = useCallback(() => {
     if (!baseRate) return 0
     return Math.round(baseRate * 0.963 * 100) / 100
-  }, [baseRate])()
+  }, [baseRate])
 
+  const rate = getRate()
   const numAmount = Number.parseFloat(amount) || 0
   const result = Math.round(numAmount * rate * 100) / 100
 
@@ -82,24 +81,24 @@ export default function ExchangePage() {
         {/* HERO */}
         <header className="text-center space-y-2">
           <h1 className="text-2xl font-bold">
-            Обмен рублей на тенге онлайн
+            Обмен рублей на тенге — быстро и онлайн
           </h1>
           <p className="text-sm text-muted-foreground">
-            Актуальный курс RUB → KZT.  
-            Перевод на карту <strong>в течение 1–5 минут</strong> после подтверждения заявки.
+            Онлайн-обмен RUB → KZT по актуальному курсу.  
+            Зачисление на карту <strong>в течение 1–5 минут</strong>.
           </p>
         </header>
 
-        {/* Rate info */}
+        {/* RATE INFO */}
         <h2 className="text-base font-semibold mt-6">
           Курс рубля к тенге на сегодня
         </h2>
         <p className="text-sm text-muted-foreground">
-          Курс обновляется онлайн. Используйте калькулятор ниже,
-          чтобы рассчитать сумму перевода рублей в тенге по текущему курсу.
+          Используйте калькулятор ниже, чтобы рассчитать,
+          сколько тенге вы получите при обмене рублей по текущему курсу.
         </p>
 
-        {/* Rate */}
+        {/* RATE BLOCK */}
         <div className="bg-muted p-4 rounded-lg text-center">
           <p className="text-sm">Курс</p>
           <p className="text-xl font-bold">
@@ -107,7 +106,7 @@ export default function ExchangePage() {
           </p>
         </div>
 
-        {/* Input */}
+        {/* INPUT */}
         <input
           type="number"
           value={amount}
@@ -118,7 +117,7 @@ export default function ExchangePage() {
 
         {/* RESULT — ИСПРАВЛЕННЫЙ БЛОК */}
         {numAmount > 0 && (
-          <div className="bg-primary/10 p-4 rounded-lg space-y-1">
+          <div className="bg-primary/10 p-4 rounded-lg space-y-2">
             <p>
               Вы отдаёте: <strong>{formatNumber(numAmount)} RUB</strong>
             </p>
@@ -146,15 +145,15 @@ export default function ExchangePage() {
               placeholder="Имя"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              required
               className="w-full p-3 rounded-lg"
+              required
             />
             <input
               placeholder="Телефон / WhatsApp"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              required
               className="w-full p-3 rounded-lg"
+              required
             />
             <button className="w-full py-3 bg-primary text-white rounded-lg">
               {submitting ? "Отправка…" : "Отправить заявку"}
@@ -165,45 +164,6 @@ export default function ExchangePage() {
         {submitted && (
           <div className="bg-green-100 p-4 rounded-lg text-center">
             Заявка принята. Деньги поступят в течение 1–5 минут.
-          </div>
-        )}
-
-        {/* FAQ */}
-        <section className="pt-8">
-          <h2 className="font-semibold mb-3">Часто задаваемые вопросы</h2>
-
-          <details>
-            <summary className="cursor-pointer font-medium">
-              Сколько времени занимает перевод?
-            </summary>
-            <p className="mt-2 text-sm">
-              Обычно перевод занимает от 1 до 5 минут после подтверждения заявки.
-            </p>
-          </details>
-
-          <details>
-            <summary className="cursor-pointer font-medium">
-              По какому курсу происходит обмен?
-            </summary>
-            <p className="mt-2 text-sm">
-              По актуальному курсу RUB/KZT без скрытых комиссий.
-            </p>
-          </details>
-        </section>
-
-        {/* Contacts */}
-        <button
-          onClick={() => setShowContacts(!showContacts)}
-          className="text-sm underline w-full text-center"
-        >
-          Реквизиты и контакты
-        </button>
-
-        {showContacts && (
-          <div className="text-sm text-muted-foreground text-center">
-            ИП Туев М.А.<br />
-            ИНН: 542500854540<br />
-            Телефон / WhatsApp: +7 913 466-66-95
           </div>
         )}
       </div>
