@@ -152,7 +152,7 @@ export default function ExchangePage() {
             onClick={() => setShowForm(true)}
             className="w-full py-3 bg-primary text-white rounded-lg"
           >
-            Получить перевод за 1–5 минут
+            Оставить заявку
           </button>
         )}
 
