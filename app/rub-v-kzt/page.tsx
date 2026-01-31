@@ -214,38 +214,68 @@ export default function ExchangePage() {
           </div>
         )}
 
-        {/* FAQ */}
-        <section className="pt-8">
-          <h2 className="font-semibold mb-3">Часто задаваемые вопросы</h2>
+{/* FAQ ACCORDION */}
+<section className="mt-10 space-y-4">
+  <h2 className="text-lg font-semibold text-foreground">
+    Часто задаваемые вопросы
+  </h2>
 
-          <details>
-            <summary className="cursor-pointer font-medium">
-              Сколько времени занимает перевод рублей в тенге?
-            </summary>
-            <p className="mt-2 text-sm">
-              После подтверждения заявки перевод рублей в тенге обычно занимает от 1 до 5 минут.
-            </p>
-          </details>
+  <div className="space-y-2 text-sm">
 
-          <details>
-            <summary className="cursor-pointer font-medium">
-              По какому курсу происходит обмен рублей?
-            </summary>
-            <p className="mt-2 text-sm">
-              Обмен происходит по актуальному курсу RUB/KZT без скрытых комиссий.
-              Курс фиксируется при подтверждении заявки.
-            </p>
-          </details>
+    <details className="group rounded-lg bg-muted p-4">
+      <summary className="cursor-pointer font-medium text-foreground list-none flex justify-between items-center">
+        Сколько времени занимает перевод рублей в тенге?
+        <span className="transition group-open:rotate-90">▶</span>
+      </summary>
+      <p className="mt-3 text-muted-foreground">
+        После подтверждения заявки перевод на карту обычно занимает
+        <strong> от 1 до 5 минут</strong>.  
+        В редких случаях время может увеличиться из-за банка получателя.
+      </p>
+    </details>
 
-          <details>
-            <summary className="cursor-pointer font-medium">
-              Можно ли обменять рубли в тенге онлайн?
-            </summary>
-            <p className="mt-2 text-sm">
-              Да, расчёт и оформление заявки на обмен рублей в тенге происходят полностью онлайн.
-            </p>
-          </details>
-        </section>
+    <details className="group rounded-lg bg-muted p-4">
+      <summary className="cursor-pointer font-medium text-foreground list-none flex justify-between items-center">
+        По какому курсу происходит обмен рублей?
+        <span className="transition group-open:rotate-90">▶</span>
+      </summary>
+      <p className="mt-3 text-muted-foreground">
+        Обмен происходит по актуальному курсу RUB/KZT
+        без скрытых комиссий.  
+        Курс отображается перед оформлением заявки и фиксируется
+        в момент подтверждения.
+      </p>
+    </details>
+
+    <details className="group rounded-lg bg-muted p-4">
+      <summary className="cursor-pointer font-medium text-foreground list-none flex justify-between items-center">
+        Можно ли обменять рубли в тенге онлайн?
+        <span className="transition group-open:rotate-90">▶</span>
+      </summary>
+      <p className="mt-3 text-muted-foreground">
+        Да. Вы можете рассчитать сумму через калькулятор
+        и оставить заявку полностью онлайн,
+        без визита в офис и поездок в банк.
+      </p>
+    </details>
+
+  </div>
+</section>
+
+{/* CONTACTS */}
+<section className="mt-6 text-center">
+  <details className="inline-block">
+    <summary className="cursor-pointer text-sm underline text-muted-foreground list-none">
+      Реквизиты и контакты
+    </summary>
+
+    <div className="mt-4 text-sm text-muted-foreground space-y-1">
+      <div>ИП Туев М.А.</div>
+      <div>ИНН: 542500854540</div>
+      <div>Телефон / WhatsApp: <strong>+7 913 466-66-95</strong></div>
+    </div>
+  </details>
+</section>
 
         {/* CONTACTS */}
         <button
