@@ -276,23 +276,6 @@ export default function ExchangePage() {
     </div>
   </details>
 </section>
-
-        {/* CONTACTS */}
-        <button
-          onClick={() => setShowContacts(!showContacts)}
-          className="text-sm underline text-center w-full"
-        >
-          Реквизиты и контакты
-        </button>
-
-        {showContacts && (
-          <div className="text-sm text-muted-foreground text-center">
-            ИП: Туев М.А.<br />
-            ИНН: 542500854540<br />
-            Телефон / WhatsApp: +7 913 466-66-95
-          </div>
-        )}
-
       </div>
     </main>
   )
