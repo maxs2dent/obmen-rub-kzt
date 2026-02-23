@@ -123,3 +123,7 @@
     @apply bg-background text-foreground;
   }
 }
+:root {
+  --brand-green: #16a34a;
+  --brand-green-dark: #15803d;
+}
