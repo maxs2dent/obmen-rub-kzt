@@ -13,16 +13,12 @@ export default function ExchangePage() {
   const [amount, setAmount] = useState<string>("")
   const [baseRate, setBaseRate] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
-  const [ratePulse, setRatePulse] = useState(false)
 
-  // ===== ДИНАМИЧЕСКИЙ КУРС =====
   const fetchRate = async () => {
     try {
       const res = await fetch("https://api.exchangerate-api.com/v4/latest/RUB")
       const data = await res.json()
       setBaseRate(data.rates.KZT)
-      setRatePulse(true)
-      setTimeout(() => setRatePulse(false), 400)
     } catch {
       setBaseRate(6.54)
     } finally {
@@ -32,7 +28,7 @@ export default function ExchangePage() {
 
   useEffect(() => {
     fetchRate()
-    const interval = setInterval(fetchRate, 20000) // обновление каждые 20 сек
+    const interval = setInterval(fetchRate, 20000)
     return () => clearInterval(interval)
   }, [])
 
@@ -62,26 +58,16 @@ export default function ExchangePage() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden px-4 pt-10 pb-32">
+    <main className="relative min-h-screen px-4 pt-10 pb-32 bg-gradient-to-b from-gray-50 via-white to-gray-100">
 
-      {/* ===== BLUR BACKGROUND ===== */}
-      <div className="absolute -top-32 -left-32 w-96 h-96 bg-green-400 rounded-full blur-3xl opacity-30 animate-pulse" />
-      <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-emerald-300 rounded-full blur-3xl opacity-30 animate-pulse" />
+      {/* Фоновый blur */}
+      <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-green-300 rounded-full blur-3xl opacity-30" />
+      <div className="absolute -bottom-40 -right-40 w-[500px] h-[500px] bg-emerald-200 rounded-full blur-3xl opacity-30" />
 
       <div className="relative max-w-md mx-auto space-y-10">
 
-        {/* BRAND */}
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-400 flex items-center justify-center text-white font-bold shadow-lg">
-            ↔
-          </div>
-          <span className="font-semibold text-gray-800">
-            obmen-rub-kzt
-          </span>
-        </div>
-
-        {/* GLASS CARD */}
-        <div className="backdrop-blur-xl bg-white/60 border border-white/40 shadow-2xl rounded-3xl p-6 space-y-6 transition-all duration-500">
+        {/* ОСНОВНАЯ КАРТОЧКА */}
+        <div className="bg-white/80 backdrop-blur-xl border border-white shadow-2xl rounded-3xl p-6 space-y-6">
 
           <div className="text-center">
             <h1 className="text-3xl font-semibold tracking-tight">
@@ -92,34 +78,35 @@ export default function ExchangePage() {
             </p>
           </div>
 
-          {/* SWITCH */}
-          <div className="bg-white/50 rounded-2xl p-1 flex backdrop-blur">
+          {/* Переключатель */}
+          <div className="bg-gray-100 rounded-2xl p-1 flex shadow-inner">
             <button
               onClick={() => setDirection("kzt_to_rub")}
-              className={`flex-1 py-3 rounded-xl transition ${
+              className={`flex-1 py-3 rounded-xl font-medium transition ${
                 direction === "kzt_to_rub"
                   ? "bg-green-600 text-white shadow"
-                  : "text-gray-700"
+                  : "text-gray-600"
               }`}
             >
               KZT → RUB
             </button>
+
             <button
               onClick={() => setDirection("rub_to_kzt")}
-              className={`flex-1 py-3 rounded-xl transition ${
+              className={`flex-1 py-3 rounded-xl font-medium transition ${
                 direction === "rub_to_kzt"
                   ? "bg-green-600 text-white shadow"
-                  : "text-gray-700"
+                  : "text-gray-600"
               }`}
             >
               RUB → KZT
             </button>
           </div>
 
-          {/* INPUT */}
-          <div>
+          {/* ВЫ ОТДАЁТЕ */}
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4">
             <p className="text-sm text-gray-600 mb-1">Вы отдаёте</p>
-            <div className="flex items-center bg-white/70 backdrop-blur rounded-2xl px-4 py-4 border border-white/50">
+            <div className="flex items-center">
               <input
                 type="number"
                 value={amount}
@@ -127,41 +114,39 @@ export default function ExchangePage() {
                 placeholder="0"
                 className="flex-1 bg-transparent text-xl font-semibold outline-none"
               />
-              <span className="font-medium">{giveCurrency}</span>
+              <span className="font-medium text-gray-700">
+                {giveCurrency}
+              </span>
             </div>
           </div>
 
-          {/* RESULT */}
+          {/* ВЫ ПОЛУЧАЕТЕ */}
           {numAmount > 0 && (
-            <div className="transition-all duration-300">
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4">
               <p className="text-sm text-gray-600 mb-1">Вы получаете</p>
-              <div className="flex items-center bg-white/70 backdrop-blur rounded-2xl px-4 py-4 border border-white/50">
+              <div className="flex items-center">
                 <div className="flex-1 text-2xl font-bold text-green-600">
                   {formatNumber(result)}
                 </div>
-                <span>{getCurrency}</span>
+                <span className="font-medium text-gray-700">
+                  {getCurrency}
+                </span>
               </div>
             </div>
           )}
 
-          {/* RATE */}
-          <div className="text-center">
-            <p className="text-sm text-gray-600">Курс</p>
-            <p
-              className={`text-3xl font-black transition-all duration-300 ${
-                ratePulse ? "scale-105 text-green-600" : ""
-              }`}
-            >
-              {formatNumber(rate)}
+          {/* КУРС */}
+          <div className="bg-gray-100 rounded-2xl p-5 text-center shadow-inner">
+            <p className="text-sm text-gray-600 mb-1">
+              Курс сегодня
             </p>
-            <p className="text-xs text-gray-500">
-              Обновляется автоматически
+            <p className="text-3xl font-black tracking-tight">
+              1 {direction === "kzt_to_rub" ? "RUB" : "KZT"} = {formatNumber(rate)} {direction === "kzt_to_rub" ? "KZT" : "RUB"}
             </p>
           </div>
 
         </div>
 
-        {/* TRUST BLOCK */}
         <div className="text-center text-sm text-gray-600">
           12 000+ успешных обменов • Работаем с 2023 года
         </div>
@@ -169,7 +154,19 @@ export default function ExchangePage() {
         <SocialProof />
         <Faq />
         <Footer />
+
       </div>
+
+      {/* Липкая кнопка */}
+      {numAmount > 0 && (
+        <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto">
+          <button
+            className="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-500 text-white rounded-2xl font-semibold text-lg shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-transform"
+          >
+            Обменять сейчас
+          </button>
+        </div>
+      )}
     </main>
   )
 }
