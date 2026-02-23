@@ -35,7 +35,7 @@ export default function ExchangePage() {
   const getRate = useCallback(() => {
     if (!baseRate) return 0
     if (direction === "kzt_to_rub") {
-      return Math.round(baseRate * 1.03 * 100) / 100
+      return Math.round(baseRate * 1.032 * 100) / 100
     } else {
       return Math.round(baseRate * 0.963 * 100) / 100
     }
