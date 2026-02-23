@@ -96,7 +96,7 @@ export default function ExchangePage() {
   }
 
   return (
-    <main className="min-h-screen bg-background px-4 pt-6 pb-28">
+    <main className="min-h-screen bg-gradient-to-b from-white to-gray-50 px-4 pt-6 pb-28">
       <div className="max-w-md mx-auto space-y-8">
 
         {/* HERO */}
@@ -138,10 +138,10 @@ export default function ExchangePage() {
         </div>
 
         {/* Rate */}
-        <div className="bg-muted p-5 rounded-xl text-center">
+        <div className="bg-white p-6 rounded-2xl text-center shadow-lg border border-gray-100">
           <p className="text-sm text-muted-foreground">Курс сегодня</p>
 
-          <p className="text-3xl font-extrabold text-foreground mt-1">
+          <p className="text-4xl font-black text-gray-900 mt-2 tracking-tight">
             1 {direction === "kzt_to_rub" ? "RUB" : "KZT"} ={" "}
             {formatNumber(rate)}{" "}
             {direction === "kzt_to_rub" ? "KZT" : "RUB"}
@@ -151,10 +151,12 @@ export default function ExchangePage() {
             Фиксируется в момент заявки
           </p>
 
-          <div className="text-xs text-muted-foreground text-center mt-3">
-            🔒 Безопасно • 💳 Карты банков • ⏱ 1–5 минут
-          </div>
-        </div>
+<div className="flex justify-center gap-4 text-xs text-gray-500 mt-4">
+  <span>🔒 Безопасно</span>
+  <span>💳 Банковские карты</span>
+  <span>⏱ 1–5 минут</span>
+</div>
+</div>
 
         {/* Amount */}
         <div className="space-y-2">
@@ -230,7 +232,7 @@ export default function ExchangePage() {
         <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto">
           <button
             onClick={() => setShowForm(true)}
-            className="w-full py-4 bg-primary text-primary-foreground rounded-xl font-semibold shadow-lg"
+            className="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-500 text-white rounded-2xl font-semibold shadow-xl"
           >
             Обменять сейчас
           </button>
