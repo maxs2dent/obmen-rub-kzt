@@ -1,3 +1,7 @@
+import SocialProof from "@/components/sections/SocialProof";
+import Faq from "@/components/sections/Faq";
+import Footer from "@/components/sections/Footer";
+
 "use client"
 
 import type React from "react"
