@@ -1,10 +1,12 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const geist = Geist({ subsets: ['latin'] })
-const geistMono = Geist_Mono({ subsets: ['latin'] })
+const inter = Inter({
+  subsets: ['latin', 'cyrillic'],
+  variable: '--font-inter',
+})
 
 export const metadata: Metadata = {
   title: 'Тенге в рубли — курс KZT ⇄ RUB сегодня, онлайн калькулятор',
@@ -61,7 +63,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ru">
-      <body className={`${geist.className} ${geistMono.className} antialiased`}>
+      <body className={`${inter.className} antialiased bg-white`}>
         {children}
         <Analytics />
 
@@ -81,7 +83,7 @@ export default function RootLayout({
                   acceptedAnswer: {
                     "@type": "Answer",
                     text:
-                      "После подтверждения заявки перевод средств на карту обычно занимает от 1 до 5 минут. В отдельных случаях время может зависеть от банка получателя."
+                      "После подтверждения заявки перевод средств на карту обычно занимает от 1 до 5 минут."
                   }
                 },
                 {
@@ -99,16 +101,7 @@ export default function RootLayout({
                   acceptedAnswer: {
                     "@type": "Answer",
                     text:
-                      "Да, вы можете рассчитать сумму через онлайн-калькулятор и оставить заявку на обмен полностью онлайн, без визита в офис."
-                  }
-                },
-                {
-                  "@type": "Question",
-                  name: "Какие данные нужны для оформления заявки на обмен?",
-                  acceptedAnswer: {
-                    "@type": "Answer",
-                    text:
-                      "Для оформления заявки достаточно указать имя и контактный телефон. Остальные детали уточняются после подтверждения."
+                      "Да, вы можете рассчитать сумму через онлайн-калькулятор и оставить заявку полностью онлайн."
                   }
                 }
               ]
