@@ -116,11 +116,11 @@ export default function ExchangePage() {
         >
           <div className="text-center space-y-2">
             <h1 className="text-3xl font-semibold flex items-center justify-center gap-2">
-              Обмен ТЕНге
+              Обмен KZT
               <span className={`transition-transform duration-300 ${direction === "rub_to_kzt" ? "rotate-180" : ""}`}>
                 ⇄
               </span>
-              РУБли
+              RUB
             </h1>
             <p className="text-sm text-gray-600">
               Онлайн • Без комиссий • 1–5 минут
