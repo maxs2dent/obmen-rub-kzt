@@ -15,6 +15,11 @@ export default function ExchangePage() {
   const [loading, setLoading] = useState(true)
   const [animate, setAnimate] = useState(false)
 
+  const [showModal, setShowModal] = useState(false)
+  const [name, setName] = useState("")
+  const [phone, setPhone] = useState("+7 ")
+  const [submitted, setSubmitted] = useState(false)
+
   const fetchRate = async () => {
     try {
       const res = await fetch("https://api.exchangerate-api.com/v4/latest/RUB")
@@ -35,13 +40,9 @@ export default function ExchangePage() {
 
   const changeDirection = (dir: Direction) => {
     setDirection(dir)
-
     setAnimate(true)
     setTimeout(() => setAnimate(false), 300)
-
-    if (typeof navigator !== "undefined" && navigator.vibrate) {
-      navigator.vibrate(20)
-    }
+    if (navigator.vibrate) navigator.vibrate(20)
   }
 
   const getRate = useCallback(() => {
@@ -68,135 +69,142 @@ export default function ExchangePage() {
       maximumFractionDigits: 2,
     })
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        Загрузка...
-      </div>
-    )
+  const formatPhone = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 11)
+    let formatted = "+7 "
+    if (digits.length > 1)
+      formatted += "(" + digits.slice(1, 4)
+    if (digits.length >= 4)
+      formatted += ") " + digits.slice(4, 7)
+    if (digits.length >= 7)
+      formatted += "-" + digits.slice(7, 9)
+    if (digits.length >= 9)
+      formatted += "-" + digits.slice(9, 11)
+    return formatted
   }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+
+    const clean = phone.replace(/\D/g, "")
+    if (clean.length !== 11) return
+
+    setSubmitted(true)
+
+    setTimeout(() => {
+      setShowModal(false)
+      setSubmitted(false)
+      setName("")
+      setPhone("+7 ")
+    }, 2000)
+  }
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Загрузка...</div>
 
   return (
     <main className="relative min-h-screen px-4 pt-10 pb-32 bg-gradient-to-b from-gray-50 via-white to-gray-100 overflow-hidden">
 
-      {/* Blur background */}
       <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-green-300 rounded-full blur-3xl opacity-30" />
       <div className="absolute -bottom-40 -right-40 w-[500px] h-[500px] bg-emerald-200 rounded-full blur-3xl opacity-30" />
 
       <div className="relative max-w-md mx-auto space-y-12">
 
-        {/* MAIN CARD */}
         <div
           className={`bg-white/80 backdrop-blur-xl border border-white shadow-2xl rounded-3xl p-6 space-y-6 transition-all duration-300 ${
             animate ? "scale-[1.02] shadow-green-200" : ""
           }`}
         >
-          {/* TITLE */}
           <div className="text-center space-y-2">
-            <h1 className="text-3xl font-semibold tracking-tight flex items-center justify-center gap-2">
+            <h1 className="text-3xl font-semibold flex items-center justify-center gap-2">
               Обмен KZT
-              <span
-                className={`inline-block transition-transform duration-300 ${
-                  direction === "rub_to_kzt" ? "rotate-180" : ""
-                }`}
-              >
+              <span className={`transition-transform duration-300 ${direction === "rub_to_kzt" ? "rotate-180" : ""}`}>
                 ⇄
               </span>
               RUB
             </h1>
-
             <p className="text-sm text-gray-600">
               Онлайн • Без комиссий • 1–5 минут
             </p>
           </div>
 
-          {/* SWITCH */}
-          <div className="bg-gray-100 rounded-2xl p-1 flex shadow-inner">
+          <div className="bg-gray-100 rounded-2xl p-1 flex">
             <button
               onClick={() => changeDirection("kzt_to_rub")}
-              className={`flex-1 py-3 rounded-xl font-medium transition ${
-                direction === "kzt_to_rub"
-                  ? "bg-green-600 text-white shadow"
-                  : "text-gray-600"
-              }`}
+              className={`flex-1 py-3 rounded-xl ${direction === "kzt_to_rub" ? "bg-green-600 text-white" : "text-gray-600"}`}
             >
               KZT → RUB
             </button>
-
             <button
               onClick={() => changeDirection("rub_to_kzt")}
-              className={`flex-1 py-3 rounded-xl font-medium transition ${
-                direction === "rub_to_kzt"
-                  ? "bg-green-600 text-white shadow"
-                  : "text-gray-600"
-              }`}
+              className={`flex-1 py-3 rounded-xl ${direction === "rub_to_kzt" ? "bg-green-600 text-white" : "text-gray-600"}`}
             >
               RUB → KZT
             </button>
           </div>
 
-          {/* GIVE */}
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4">
+          <div>
             <p className="text-sm text-gray-600 mb-1">Вы отдаёте</p>
-            <div className="flex items-center">
-              <input
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="0"
-                className="flex-1 bg-transparent text-xl font-semibold outline-none"
-              />
-              <span className="font-medium text-gray-700">
-                {giveCurrency}
-              </span>
-            </div>
+            <input
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="0"
+              className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-4 text-xl font-semibold"
+            />
           </div>
 
-          {/* RECEIVE */}
-          {numAmount > 0 && (
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4">
-              <p className="text-sm text-gray-600 mb-1">Вы получаете</p>
-              <div className="flex items-center">
-                <div className="flex-1 text-2xl font-bold text-green-600">
-                  {formatNumber(result)}
-                </div>
-                <span className="font-medium text-gray-700">
-                  {getCurrency}
-                </span>
-              </div>
-            </div>
-          )}
-
-          {/* RATE */}
-          <div className="bg-gray-100 rounded-2xl p-5 text-center shadow-inner">
-            <p className="text-sm text-gray-600 mb-1">
-              Курс сегодня
-            </p>
-            <p className="text-3xl font-black tracking-tight">
-              1 {direction === "kzt_to_rub" ? "RUB" : "KZT"} ={" "}
-              {formatNumber(rate)}{" "}
-              {direction === "kzt_to_rub" ? "KZT" : "RUB"}
-            </p>
-            <p className="text-xs text-gray-500 mt-1">
-              Обновляется автоматически
+          <div className="bg-gray-100 rounded-2xl p-5 text-center">
+            <p className="text-sm text-gray-600">Курс</p>
+            <p className="text-3xl font-black">
+              1 {direction === "kzt_to_rub" ? "RUB" : "KZT"} = {formatNumber(rate)} {direction === "kzt_to_rub" ? "KZT" : "RUB"}
             </p>
           </div>
         </div>
 
-        {/* SOCIAL + FAQ */}
         <SocialProof />
         <Faq />
         <Footer />
       </div>
 
-      {/* STICKY BUTTON */}
       {numAmount > 0 && (
         <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto">
           <button
-            className="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-500 text-white rounded-2xl font-semibold text-lg shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-transform"
+            onClick={() => setShowModal(true)}
+            className="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-500 text-white rounded-2xl font-semibold text-lg shadow-2xl"
           >
             Обменять сейчас
           </button>
+        </div>
+      )}
+
+      {showModal && (
+        <div className="fixed inset-0 bg-black/40 flex items-end justify-center z-50">
+          <div className="bg-white w-full rounded-t-3xl p-6 space-y-4 animate-slideUp">
+            {!submitted ? (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <input
+                  placeholder="Ваше имя"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  className="w-full p-4 border rounded-xl"
+                />
+                <input
+                  value={phone}
+                  onChange={(e) => setPhone(formatPhone(e.target.value))}
+                  className="w-full p-4 border rounded-xl"
+                />
+                <button className="w-full py-3 bg-green-600 text-white rounded-xl">
+                  Отправить
+                </button>
+              </form>
+            ) : (
+              <div className="text-center py-10">
+                <div className="text-6xl text-green-500 mb-4">✓</div>
+                <div className="text-lg font-semibold">Заявка отправлена</div>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </main>
