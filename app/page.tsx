@@ -1,11 +1,11 @@
-import SocialProof from "@/components/sections/SocialProof";
-import Faq from "@/components/sections/Faq";
-import Footer from "@/components/sections/Footer";
-
 "use client"
 
 import type React from "react"
 import { useState, useEffect, useCallback } from "react"
+
+import SocialProof from "@/components/sections/SocialProof"
+import Faq from "@/components/sections/Faq"
+import Footer from "@/components/sections/Footer"
 
 type Direction = "kzt_to_rub" | "rub_to_kzt"
 
@@ -97,36 +97,19 @@ export default function ExchangePage() {
 
   return (
     <main className="min-h-screen bg-background p-4">
-      <div className="max-w-md mx-auto space-y-6">
+      <div className="max-w-md mx-auto space-y-8">
 
-        {/* SEO BLOCK */}
-<header className="space-y-2 text-center">
-  <h1 className="text-2xl font-bold text-foreground">
-    Быстрый обмен тенге и рублей
-  </h1>
-  <p className="text-sm text-muted-foreground">
-    Онлайн обмен KZT ⇄ RUB по актуальному курсу.
-    После подтверждения заявки деньги поступают на Вашу карту
-    <strong> в течение 1–5 минут</strong> после подтверждения заявки.
-  </p>
-</header>
-
-        {/* SEO H2 */}
-        <h2 className="text-base font-semibold text-foreground mt-6">
-          Курс тенге к рублю на сегодня
-        </h2>
-
+        {/* HERO */}
+        <header className="space-y-2 text-center">
+          <h1 className="text-2xl font-bold text-foreground">
+            Быстрый обмен KZT ⇄ RUB
+          </h1>
           <p className="text-sm text-muted-foreground">
-          Курс рубля к тенге меняется в течение дня и зависит от ситуации на валютном рынке.
-          Используйте калькулятор ниже, чтобы узнать, сколько рублей вы получите при обмене тенге
-          по актуальному курсу.
-        </p>
+            Онлайн обмен по актуальному курсу.
+            Перевод на карту в течение <strong>1–5 минут</strong>.
+          </p>
+        </header>
 
-        {/* Hidden SEO anchor */}
-        <h3 className="sr-only">
-          Сколько тенге в рублях сегодня
-        </h3>
-        
         {/* Direction selector */}
         <div className="flex gap-2">
           <button
@@ -137,7 +120,7 @@ export default function ExchangePage() {
                 : "bg-muted text-muted-foreground"
             }`}
           >
-            Купить рубли
+            KZT → RUB
           </button>
           <button
             onClick={() => setDirection("rub_to_kzt")}
@@ -147,16 +130,19 @@ export default function ExchangePage() {
                 : "bg-muted text-muted-foreground"
             }`}
           >
-            Купить тенге
+            RUB → KZT
           </button>
         </div>
 
         {/* Rate display */}
         <div className="bg-muted p-4 rounded-lg text-center">
-          <p className="text-sm text-muted-foreground">Курс</p>
+          <p className="text-sm text-muted-foreground">Курс сегодня</p>
           <p className="text-2xl font-bold text-foreground">
             1 {direction === "kzt_to_rub" ? "RUB" : "KZT"} = {formatNumber(rate)}{" "}
             {direction === "kzt_to_rub" ? "KZT" : "RUB"}
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            Фиксируется в момент заявки
           </p>
         </div>
 
@@ -174,39 +160,29 @@ export default function ExchangePage() {
             className="w-full p-3 border border-border rounded-lg bg-background text-foreground text-lg"
           />
         </div>
-        
-{/* Result */}
-{numAmount > 0 && (
-  <div className="bg-primary/10 p-4 rounded-lg space-y-2">
-    <p className="text-foreground">
-      Вы отдаёте:{" "}
-      <strong>
-        {formatNumber(numAmount)} {giveCurrency}
-      </strong>
-    </p>
 
-    <p className="text-foreground">
-      Курс: <strong>{formatNumber(rate)}</strong>
-    </p>
+        {/* Result */}
+        {numAmount > 0 && (
+          <div className="bg-primary/10 p-4 rounded-lg space-y-2">
+            <p>
+              Вы получите:{" "}
+              <strong>
+                {formatNumber(result)} {getCurrency}
+              </strong>
+            </p>
+          </div>
+        )}
 
-    <p className="text-foreground text-lg">
-      Вы получите:{" "}
-      <strong>
-        {formatNumber(result)} {getCurrency}
-      </strong>
-    </p>
-  </div>
-)}
+        {/* CTA */}
+        {numAmount > 0 && !showForm && !submitted && (
+          <button
+            onClick={() => setShowForm(true)}
+            className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-medium"
+          >
+            Обменять сейчас
+          </button>
+        )}
 
-{/* CTA: Оставить заявку */}
-{numAmount > 0 && !showForm && !submitted && (
-  <button
-    onClick={() => setShowForm(true)}
-    className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-medium"
-  >
-    Оставить заявку
-  </button>
-)}
         {showForm && !submitted && (
           <form onSubmit={handleSubmit} className="space-y-4 bg-muted p-4 rounded-lg">
             <input
@@ -231,75 +207,19 @@ export default function ExchangePage() {
               {submitting ? "Отправка..." : "Отправить заявку"}
             </button>
           </form>
-)}
+        )}
 
         {submitted && (
           <div className="bg-green-100 text-green-800 p-4 rounded-lg text-center">
             Заявка принята. Мы свяжемся с вами.
           </div>
         )}
-{/* FAQ ACCORDION */}
-<section className="mt-10 space-y-4">
-  <h2 className="text-lg font-semibold text-foreground">
-    Часто задаваемые вопросы
-  </h2>
 
-  <div className="space-y-2 text-sm">
+        {/* NEW SECTIONS */}
+        <SocialProof />
+        <Faq />
+        <Footer />
 
-    <details className="group rounded-lg bg-muted p-4">
-      <summary className="cursor-pointer font-medium text-foreground list-none flex justify-between items-center">
-        Сколько времени занимает перевод рублей в тенге?
-        <span className="transition group-open:rotate-90">▶</span>
-      </summary>
-      <p className="mt-3 text-muted-foreground">
-        После подтверждения заявки перевод на карту обычно занимает
-        <strong> от 1 до 5 минут</strong>.  
-        В редких случаях время может увеличиться из-за банка получателя.
-      </p>
-    </details>
-
-    <details className="group rounded-lg bg-muted p-4">
-      <summary className="cursor-pointer font-medium text-foreground list-none flex justify-between items-center">
-        По какому курсу происходит обмен рублей?
-        <span className="transition group-open:rotate-90">▶</span>
-      </summary>
-      <p className="mt-3 text-muted-foreground">
-        Обмен происходит по актуальному курсу RUB/KZT
-        без скрытых комиссий.  
-        Курс отображается перед оформлением заявки и фиксируется
-        в момент подтверждения.
-      </p>
-    </details>
-
-    <details className="group rounded-lg bg-muted p-4">
-      <summary className="cursor-pointer font-medium text-foreground list-none flex justify-between items-center">
-        Можно ли обменять рубли в тенге онлайн?
-        <span className="transition group-open:rotate-90">▶</span>
-      </summary>
-      <p className="mt-3 text-muted-foreground">
-        Да. Вы можете рассчитать сумму через калькулятор
-        и оставить заявку полностью онлайн,
-        без визита в офис и поездок в банк.
-      </p>
-    </details>
-
-  </div>
-</section>
-
-{/* CONTACTS */}
-<section className="mt-6 text-center">
-  <details className="inline-block">
-    <summary className="cursor-pointer text-sm underline text-muted-foreground list-none">
-      Реквизиты и контакты
-    </summary>
-
-    <div className="mt-4 text-sm text-muted-foreground space-y-1">
-      <div>ИП Туев М.А.</div>
-      <div>ИНН: 542500854540</div>
-      <div>Телефон / WhatsApp: <strong>+7 913 466-66-95</strong></div>
-    </div>
-  </details>
-</section>
       </div>
     </main>
   )
