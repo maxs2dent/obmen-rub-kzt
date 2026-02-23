@@ -96,37 +96,40 @@ export default function ExchangePage() {
   }
 
   return (
-    <main className="min-h-screen bg-background p-4">
+    <main className="min-h-screen bg-background px-4 pt-6 pb-28">
       <div className="max-w-md mx-auto space-y-8">
 
         {/* HERO */}
-        <header className="space-y-2 text-center">
+        <header className="space-y-3 text-center">
           <h1 className="text-2xl font-bold text-foreground">
             Быстрый обмен KZT ⇄ RUB
           </h1>
+
           <p className="text-sm text-muted-foreground">
-            Онлайн обмен по актуальному курсу.
-            Перевод на карту в течение <strong>1–5 минут</strong>.
+            Обмен без скрытых комиссий.
+            Деньги поступают на карту в течение{" "}
+            <strong>1–5 минут</strong>.
           </p>
         </header>
 
-        {/* Direction selector */}
+        {/* Direction */}
         <div className="flex gap-2">
           <button
             onClick={() => setDirection("kzt_to_rub")}
-            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${
+            className={`flex-1 py-3 px-4 rounded-xl font-medium transition-colors ${
               direction === "kzt_to_rub"
-                ? "bg-primary text-primary-foreground"
+                ? "bg-primary text-primary-foreground shadow"
                 : "bg-muted text-muted-foreground"
             }`}
           >
             KZT → RUB
           </button>
+
           <button
             onClick={() => setDirection("rub_to_kzt")}
-            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${
+            className={`flex-1 py-3 px-4 rounded-xl font-medium transition-colors ${
               direction === "rub_to_kzt"
-                ? "bg-primary text-primary-foreground"
+                ? "bg-primary text-primary-foreground shadow"
                 : "bg-muted text-muted-foreground"
             }`}
           >
@@ -134,37 +137,45 @@ export default function ExchangePage() {
           </button>
         </div>
 
-        {/* Rate display */}
-        <div className="bg-muted p-4 rounded-lg text-center">
+        {/* Rate */}
+        <div className="bg-muted p-5 rounded-xl text-center">
           <p className="text-sm text-muted-foreground">Курс сегодня</p>
-          <p className="text-2xl font-bold text-foreground">
-            1 {direction === "kzt_to_rub" ? "RUB" : "KZT"} = {formatNumber(rate)}{" "}
+
+          <p className="text-3xl font-extrabold text-foreground mt-1">
+            1 {direction === "kzt_to_rub" ? "RUB" : "KZT"} ={" "}
+            {formatNumber(rate)}{" "}
             {direction === "kzt_to_rub" ? "KZT" : "RUB"}
           </p>
-          <p className="text-xs text-muted-foreground mt-1">
+
+          <p className="text-xs text-muted-foreground mt-2">
             Фиксируется в момент заявки
           </p>
+
+          <div className="text-xs text-muted-foreground text-center mt-3">
+            🔒 Безопасно • 💳 Карты банков • ⏱ 1–5 минут
+          </div>
         </div>
 
-        {/* Amount input */}
+        {/* Amount */}
         <div className="space-y-2">
           <label className="block text-sm font-medium text-foreground">
             Вы отдаёте ({giveCurrency})
           </label>
+
           <input
             type="number"
             inputMode="decimal"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             placeholder="Введите сумму"
-            className="w-full p-3 border border-border rounded-lg bg-background text-foreground text-lg"
+            className="w-full p-4 border border-border rounded-xl bg-background text-foreground text-lg"
           />
         </div>
 
         {/* Result */}
         {numAmount > 0 && (
-          <div className="bg-primary/10 p-4 rounded-lg space-y-2">
-            <p>
+          <div className="bg-primary/10 p-4 rounded-xl text-center">
+            <p className="text-foreground text-lg">
               Вы получите:{" "}
               <strong>
                 {formatNumber(result)} {getCurrency}
@@ -173,18 +184,9 @@ export default function ExchangePage() {
           </div>
         )}
 
-        {/* CTA */}
-        {numAmount > 0 && !showForm && !submitted && (
-          <button
-            onClick={() => setShowForm(true)}
-            className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-medium"
-          >
-            Обменять сейчас
-          </button>
-        )}
-
+        {/* FORM */}
         {showForm && !submitted && (
-          <form onSubmit={handleSubmit} className="space-y-4 bg-muted p-4 rounded-lg">
+          <form onSubmit={handleSubmit} className="space-y-4 bg-muted p-4 rounded-xl">
             <input
               placeholder="Имя"
               value={name}
@@ -192,6 +194,7 @@ export default function ExchangePage() {
               required
               className="w-full p-3 border rounded-lg"
             />
+
             <input
               placeholder="Телефон"
               value={phone}
@@ -199,10 +202,11 @@ export default function ExchangePage() {
               required
               className="w-full p-3 border rounded-lg"
             />
+
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-3 bg-primary text-primary-foreground rounded-lg"
+              className="w-full py-3 bg-primary text-primary-foreground rounded-xl font-medium"
             >
               {submitting ? "Отправка..." : "Отправить заявку"}
             </button>
@@ -210,17 +214,28 @@ export default function ExchangePage() {
         )}
 
         {submitted && (
-          <div className="bg-green-100 text-green-800 p-4 rounded-lg text-center">
+          <div className="bg-green-100 text-green-800 p-4 rounded-xl text-center">
             Заявка принята. Мы свяжемся с вами.
           </div>
         )}
 
-        {/* NEW SECTIONS */}
+        {/* BRAND BLOCKS */}
         <SocialProof />
         <Faq />
         <Footer />
-
       </div>
+
+      {/* FIXED CTA */}
+      {numAmount > 0 && !showForm && !submitted && (
+        <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto">
+          <button
+            onClick={() => setShowForm(true)}
+            className="w-full py-4 bg-primary text-primary-foreground rounded-xl font-semibold shadow-lg"
+          >
+            Обменять сейчас
+          </button>
+        </div>
+      )}
     </main>
   )
 }
