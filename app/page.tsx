@@ -25,8 +25,7 @@ export default function ExchangePage() {
       try {
         const res = await fetch("https://api.exchangerate-api.com/v4/latest/RUB")
         const data = await res.json()
-        const kztPerRub = data.rates.KZT
-        setBaseRate(kztPerRub)
+        setBaseRate(data.rates.KZT)
       } catch {
         setBaseRate(6.54)
       } finally {
@@ -89,155 +88,151 @@ export default function ExchangePage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-background">
-        <p className="text-foreground">Загрузка курса...</p>
+      <main className="min-h-screen flex items-center justify-center bg-white">
+        Загрузка курса...
       </main>
     )
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white to-gray-50 px-4 pt-6 pb-28">
-      <div className="max-w-md mx-auto space-y-8">
+    <main className="min-h-screen bg-gradient-to-b from-white to-gray-100 px-4 pt-8 pb-16">
+      <div className="max-w-md mx-auto space-y-10">
 
-        {/* HERO */}
-        <header className="space-y-3 text-center">
-          <h1 className="text-2xl font-bold text-foreground">
-            Быстрый обмен KZT ⇄ RUB
-          </h1>
+        {/* ==== MAIN CARD ==== */}
+        <div className="bg-white rounded-3xl p-6 shadow-xl border border-gray-100 space-y-6">
 
-          <p className="text-sm text-muted-foreground">
-            Обмен без скрытых комиссий.
-            Деньги поступают на карту в течение{" "}
-            <strong>1–5 минут</strong>.
-          </p>
-        </header>
-
-        {/* Direction */}
-        <div className="flex gap-2">
-          <button
-            onClick={() => setDirection("kzt_to_rub")}
-            className={`flex-1 py-3 px-4 rounded-xl font-medium transition-colors ${
-              direction === "kzt_to_rub"
-                ? "bg-primary text-primary-foreground shadow"
-                : "bg-muted text-muted-foreground"
-            }`}
-          >
-            KZT → RUB
-          </button>
-
-          <button
-            onClick={() => setDirection("rub_to_kzt")}
-            className={`flex-1 py-3 px-4 rounded-xl font-medium transition-colors ${
-              direction === "rub_to_kzt"
-                ? "bg-primary text-primary-foreground shadow"
-                : "bg-muted text-muted-foreground"
-            }`}
-          >
-            RUB → KZT
-          </button>
-        </div>
-
-        {/* Rate */}
-        <div className="bg-white p-6 rounded-2xl text-center shadow-lg border border-gray-100">
-          <p className="text-sm text-muted-foreground">Курс сегодня</p>
-
-          <p className="text-4xl font-black text-gray-900 mt-2 tracking-tight">
-            1 {direction === "kzt_to_rub" ? "RUB" : "KZT"} ={" "}
-            {formatNumber(rate)}{" "}
-            {direction === "kzt_to_rub" ? "KZT" : "RUB"}
-          </p>
-
-          <p className="text-xs text-muted-foreground mt-2">
-            Фиксируется в момент заявки
-          </p>
-
-<div className="flex justify-center gap-4 text-xs text-gray-500 mt-4">
-  <span>🔒 Безопасно</span>
-  <span>💳 Банковские карты</span>
-  <span>⏱ 1–5 минут</span>
-</div>
-</div>
-
-        {/* Amount */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-foreground">
-            Вы отдаёте ({giveCurrency})
-          </label>
-
-          <input
-            type="number"
-            inputMode="decimal"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder="Введите сумму"
-            className="w-full p-4 border border-border rounded-xl bg-background text-foreground text-lg"
-          />
-        </div>
-
-        {/* Result */}
-        {numAmount > 0 && (
-          <div className="bg-primary/10 p-4 rounded-xl text-center">
-            <p className="text-foreground text-lg">
-              Вы получите:{" "}
-              <strong>
-                {formatNumber(result)} {getCurrency}
-              </strong>
+          {/* TITLE */}
+          <div className="text-center space-y-1">
+            <h1 className="text-2xl font-bold text-gray-900">
+              Быстрый обмен
+            </h1>
+            <p className="text-lg font-semibold text-gray-800">
+              KZT ⇄ RUB
+            </p>
+            <p className="text-sm text-gray-500">
+              Перевод за 1–5 минут
             </p>
           </div>
-        )}
 
-        {/* FORM */}
-        {showForm && !submitted && (
-          <form onSubmit={handleSubmit} className="space-y-4 bg-muted p-4 rounded-xl">
-            <input
-              placeholder="Имя"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              className="w-full p-3 border rounded-lg"
-            />
-
-            <input
-              placeholder="Телефон"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              required
-              className="w-full p-3 border rounded-lg"
-            />
+          {/* SEGMENT CONTROL */}
+          <div className="bg-gray-100 rounded-2xl p-1 flex">
+            <button
+              onClick={() => setDirection("kzt_to_rub")}
+              className={`flex-1 py-3 rounded-xl font-medium transition ${
+                direction === "kzt_to_rub"
+                  ? "bg-green-600 text-white shadow"
+                  : "text-gray-600"
+              }`}
+            >
+              KZT → RUB
+            </button>
 
             <button
-              type="submit"
-              disabled={submitting}
-              className="w-full py-3 bg-primary text-primary-foreground rounded-xl font-medium"
+              onClick={() => setDirection("rub_to_kzt")}
+              className={`flex-1 py-3 rounded-xl font-medium transition ${
+                direction === "rub_to_kzt"
+                  ? "bg-green-600 text-white shadow"
+                  : "text-gray-600"
+              }`}
             >
-              {submitting ? "Отправка..." : "Отправить заявку"}
+              RUB → KZT
             </button>
-          </form>
-        )}
-
-        {submitted && (
-          <div className="bg-green-100 text-green-800 p-4 rounded-xl text-center">
-            Заявка принята. Мы свяжемся с вами.
           </div>
-        )}
 
-        {/* BRAND BLOCKS */}
+          {/* GIVE */}
+          <div>
+            <p className="text-sm text-gray-500 mb-1">Вы отдаёте</p>
+            <div className="flex items-center bg-gray-50 rounded-2xl px-4 py-4 border border-gray-200">
+              <input
+                type="number"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="0"
+                className="flex-1 bg-transparent text-xl font-semibold outline-none"
+              />
+              <span className="text-gray-600 font-medium">{giveCurrency}</span>
+            </div>
+          </div>
+
+          {/* RECEIVE */}
+          {numAmount > 0 && (
+            <div>
+              <p className="text-sm text-gray-500 mb-1">Вы получаете</p>
+              <div className="flex items-center bg-gray-50 rounded-2xl px-4 py-4 border border-gray-200">
+                <div className="flex-1 text-xl font-semibold">
+                  {formatNumber(result)}
+                </div>
+                <span className="text-gray-600 font-medium">{getCurrency}</span>
+              </div>
+            </div>
+          )}
+
+          {/* RATE */}
+          <div className="bg-gray-100 rounded-2xl p-4 text-center">
+            <p className="text-sm text-gray-500">Курс сегодня</p>
+            <p className="text-xl font-bold text-gray-900">
+              1 {direction === "kzt_to_rub" ? "RUB" : "KZT"} ={" "}
+              {formatNumber(rate)}{" "}
+              {direction === "kzt_to_rub" ? "KZT" : "RUB"}
+            </p>
+            <p className="text-xs text-gray-500 mt-1">
+              Фиксируется на 5 минут
+            </p>
+          </div>
+
+          {/* CTA */}
+          {numAmount > 0 && (
+            <button
+              onClick={() => setShowForm(true)}
+              className="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-500 text-white rounded-2xl font-semibold text-lg shadow-lg"
+            >
+              Обменять сейчас
+            </button>
+          )}
+
+          {/* FORM */}
+          {showForm && !submitted && (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <input
+                placeholder="Имя"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                className="w-full p-3 border rounded-xl"
+              />
+
+              <input
+                placeholder="Телефон"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                required
+                className="w-full p-3 border rounded-xl"
+              />
+
+              <button
+                type="submit"
+                disabled={submitting}
+                className="w-full py-3 bg-black text-white rounded-xl font-medium"
+              >
+                {submitting ? "Отправка..." : "Отправить заявку"}
+              </button>
+            </form>
+          )}
+
+          {submitted && (
+            <div className="bg-green-100 text-green-800 p-4 rounded-xl text-center">
+              Заявка принята. Мы свяжемся с вами.
+            </div>
+          )}
+
+        </div>
+
+        {/* ==== SECTIONS ==== */}
         <SocialProof />
         <Faq />
         <Footer />
-      </div>
 
-      {/* FIXED CTA */}
-      {numAmount > 0 && !showForm && !submitted && (
-        <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto">
-          <button
-            onClick={() => setShowForm(true)}
-            className="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-500 text-white rounded-2xl font-semibold shadow-xl"
-          >
-            Обменять сейчас
-          </button>
-        </div>
-      )}
+      </div>
     </main>
   )
 }
