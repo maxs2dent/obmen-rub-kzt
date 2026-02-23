@@ -58,34 +58,6 @@ export default function ExchangePage() {
   const formatNumber = (n: number) =>
     n.toLocaleString("ru-RU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (!name.trim() || !phone.trim()) return
-
-    setSubmitting(true)
-    try {
-      await fetch("/api/telegram", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: name.trim(),
-          phone: phone.trim(),
-          direction: direction === "kzt_to_rub" ? "KZT → RUB" : "RUB → KZT",
-          rate,
-          giveAmount: numAmount,
-          giveCurrency,
-          getAmount: result,
-          getCurrency,
-        }),
-      })
-      setSubmitted(true)
-    } catch {
-      alert("Ошибка отправки")
-    } finally {
-      setSubmitting(false)
-    }
-  }
-
   if (loading) {
     return (
       <main className="min-h-screen flex items-center justify-center bg-white">
@@ -98,7 +70,7 @@ export default function ExchangePage() {
     <main className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-gray-100 px-4 pt-8 pb-24">
       <div className="max-w-md mx-auto space-y-10">
 
-        {/* ===== BRAND HEADER ===== */}
+        {/* Brand */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-green-500 to-emerald-400 flex items-center justify-center text-white font-bold shadow-md">
@@ -108,32 +80,23 @@ export default function ExchangePage() {
               obmen-rub-kzt.ru
             </span>
           </div>
-          <a href="#" className="text-sm text-gray-600 hover:text-gray-900">
-            Поддержка
-          </a>
         </div>
 
-        {/* ===== MAIN CARD ===== */}
+        {/* Main Card */}
         <div className="relative bg-white rounded-3xl p-6 shadow-2xl border border-gray-100 space-y-6 overflow-hidden">
 
-          {/* subtle premium glow */}
           <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-transparent to-transparent opacity-40 pointer-events-none" />
 
-          {/* TITLE */}
-          <div className="text-center space-y-1 relative">
-            <h1 className="text-2xl font-bold text-gray-900">
-              Быстрый обмен
+          <div className="text-center">
+            <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
+              Быстрый обмен KZT ⇄ RUB
             </h1>
-            <p className="text-lg font-semibold text-gray-800">
-              KZT ⇄ RUB
-            </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 mt-1">
               Перевод за 1–5 минут
             </p>
           </div>
 
-          {/* SEGMENT CONTROL */}
-          <div className="bg-gray-100 rounded-2xl p-1 flex relative">
+          <div className="bg-gray-100 rounded-2xl p-1 flex">
             <button
               onClick={() => setDirection("kzt_to_rub")}
               className={`flex-1 py-3 rounded-xl font-medium transition ${
@@ -157,8 +120,7 @@ export default function ExchangePage() {
             </button>
           </div>
 
-          {/* GIVE */}
-          <div className="relative">
+          <div>
             <p className="text-sm text-gray-500 mb-1">Вы отдаёте</p>
             <div className="flex items-center bg-gray-50 rounded-2xl px-4 py-4 border border-gray-200">
               <input
@@ -172,12 +134,11 @@ export default function ExchangePage() {
             </div>
           </div>
 
-          {/* RECEIVE */}
           {numAmount > 0 && (
-            <div className="relative">
+            <div>
               <p className="text-sm text-gray-500 mb-1">Вы получаете</p>
               <div className="flex items-center bg-gray-50 rounded-2xl px-4 py-4 border border-gray-200">
-                <div className="flex-1 text-xl font-semibold text-green-600 transition-all duration-300">
+                <div className="flex-1 text-xl font-semibold text-green-600">
                   {formatNumber(result)}
                 </div>
                 <span className="text-gray-600 font-medium">{getCurrency}</span>
@@ -185,65 +146,24 @@ export default function ExchangePage() {
             </div>
           )}
 
-          {/* RATE */}
-          <div className="bg-gray-100 rounded-2xl p-4 text-center relative">
+          <div className="bg-gray-100 rounded-2xl p-4 text-center">
             <p className="text-sm text-gray-500">Курс сегодня</p>
-            <p className="text-2xl font-extrabold text-gray-900 tracking-tight">
+            <p className="text-3xl font-black tracking-tight text-gray-900">
               1 {direction === "kzt_to_rub" ? "RUB" : "KZT"} ={" "}
               {formatNumber(rate)}{" "}
               {direction === "kzt_to_rub" ? "KZT" : "RUB"}
             </p>
-            <p className="text-xs text-gray-500 mt-1">
-              Фиксируется на 5 минут
-            </p>
           </div>
-
-          {/* FORM */}
-          {showForm && !submitted && (
-            <form onSubmit={handleSubmit} className="space-y-4 relative">
-              <input
-                placeholder="Имя"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                className="w-full p-3 border rounded-xl"
-              />
-
-              <input
-                placeholder="Телефон"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                required
-                className="w-full p-3 border rounded-xl"
-              />
-
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full py-3 bg-black text-white rounded-xl font-medium"
-              >
-                {submitting ? "Отправка..." : "Отправить заявку"}
-              </button>
-            </form>
-          )}
-
-          {submitted && (
-            <div className="bg-green-100 text-green-800 p-4 rounded-xl text-center relative">
-              Заявка принята. Мы свяжемся с вами.
-            </div>
-          )}
 
         </div>
 
-        {/* ===== SECTIONS ===== */}
         <SocialProof />
         <Faq />
         <Footer />
 
       </div>
 
-      {/* ===== STICKY CTA ===== */}
-      {numAmount > 0 && !showForm && !submitted && (
+      {numAmount > 0 && (
         <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto">
           <button
             onClick={() => setShowForm(true)}
