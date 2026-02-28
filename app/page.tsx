@@ -299,9 +299,8 @@ export default function ExchangePage() {
                 />
 
                 <input
-                  type="tel"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
+  type="tel"
+  inputMode="numeric"
                   value={phone}
                   onChange={(e) => setPhone(formatPhone(e.target.value))}
                   className="w-full p-4 border rounded-xl"
