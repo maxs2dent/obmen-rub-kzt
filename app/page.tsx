@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useState, useEffect, useCallback } from "react"
 import SocialProof from "@/components/sections/SocialProof"
 import Faq from "@/components/sections/Faq"
 import Footer from "@/components/sections/Footer"
@@ -20,46 +20,42 @@ export default function ExchangePage() {
   const [submitted, setSubmitted] = useState(false)
 
   const [showInfo, setShowInfo] = useState(false)
+  const [lastUpdate, setLastUpdate] = useState<string>("")
 
   /* ===== FETCH RATE FROM SERVER (3 раза в день) ===== */
 
-const [lastUpdate, setLastUpdate] = useState<string>("")
+  const fetchRate = async () => {
+    try {
+      const res = await fetch("/api/rate", {
+        cache: "no-store",
+      })
 
-const fetchRate = async () => {
-  try {
-    const res = await fetch("/api/rate", {
-      cache: "no-store",
-    })
+      const data = await res.json()
 
-    const data = await res.json()
-
-    if (data.rate) {
-      setBaseRate(data.rate)
-
-      if (data.updatedAt !== undefined) {
-        const date = new Date(data.updatedAt)
-        const formatted = date.toLocaleTimeString("ru-RU", {
-          hour: "2-digit",
-          minute: "2-digit",
-        })
-        setLastUpdate(`сегодня в ${formatted}`)
+      if (data.rate) {
+        setBaseRate(data.rate)
       }
-    }
-  } catch {
-    setBaseRate(6.5)
-  } finally {
-    setLoading(false)
-  }
-}
 
-useEffect(() => {
-  fetchRate()
-}, [])
+      if (data.slot) {
+        setLastUpdate(`сегодня в ${data.slot}`)
+      }
+
+    } catch {
+      setBaseRate(6.5)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchRate()
+  }, [])
 
   /* ===== RATE LOGIC ===== */
 
   const getRate = useCallback(() => {
     if (!baseRate) return 0
+
     return direction === "kzt_to_rub"
       ? Math.round(baseRate * 1.032 * 100) / 100
       : Math.round(baseRate * 0.959 * 100) / 100
@@ -202,16 +198,15 @@ useEffect(() => {
               {direction === "kzt_to_rub" ? "KZT" : "RUB"}
             </p>
 
-            {/* Центрированный блок */}
             {showInfo && (
               <div className="mt-4 text-sm text-gray-600 bg-white border border-gray-200 rounded-xl p-3">
                 Курс формируется на основании рыночных данных
                 и может изменяться в течение дня.
                 {lastUpdate && (
-  <p className="text-xs text-red-500 mt-2">
-    последнее обновление: {lastUpdate}
-  </p>
-)}
+                  <p className="text-xs text-red-500 mt-2">
+                    Последнее обновление: {lastUpdate}
+                  </p>
+                )}
               </div>
             )}
           </div>
@@ -244,7 +239,6 @@ useEffect(() => {
             className="bg-white w-full rounded-t-3xl p-6 space-y-4"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Кнопка закрытия */}
             <div className="flex justify-end">
               <button
                 onClick={() => setShowModal(false)}
