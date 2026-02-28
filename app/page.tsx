@@ -141,7 +141,7 @@ export default function ExchangePage() {
           {/* HEADER */}
           <div className="text-center space-y-2">
             <h1 className="text-3xl font-semibold flex items-center justify-center gap-2">
-              Быстрый обмен валют KZT
+              Обмен KZT
               <span
                 className={`transition-transform duration-300 ${
                   direction === "rub_to_kzt" ? "rotate-180" : ""
