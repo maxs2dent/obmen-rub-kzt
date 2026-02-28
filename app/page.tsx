@@ -13,7 +13,6 @@ export default function ExchangePage() {
   const [amount, setAmount] = useState<string>("")
   const [baseRate, setBaseRate] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
-  const [animate, setAnimate] = useState(false)
 
   const [showModal, setShowModal] = useState(false)
   const [name, setName] = useState("")
@@ -21,7 +20,6 @@ export default function ExchangePage() {
   const [submitted, setSubmitted] = useState(false)
 
   const [showInfo, setShowInfo] = useState(false)
-  const popoverRef = useRef<HTMLDivElement | null>(null)
 
   /* ===== FETCH RATE ===== */
 
@@ -41,18 +39,6 @@ export default function ExchangePage() {
     fetchRate()
     const interval = setInterval(fetchRate, 20000)
     return () => clearInterval(interval)
-  }, [])
-
-  /* ===== CLOSE POPOVER ===== */
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
-        setShowInfo(false)
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
   /* ===== RATE LOGIC ===== */
@@ -83,15 +69,6 @@ export default function ExchangePage() {
       maximumFractionDigits: 2,
     })
 
-  /* ===== UX ===== */
-
-  const changeDirection = (dir: Direction) => {
-    setDirection(dir)
-    setAnimate(true)
-    setTimeout(() => setAnimate(false), 300)
-    if (navigator.vibrate) navigator.vibrate(20)
-  }
-
   const formatPhone = (value: string) => {
     const digits = value.replace(/\D/g, "").slice(0, 11)
     let formatted = "+7 "
@@ -120,42 +97,25 @@ export default function ExchangePage() {
   if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center">
-        Загрузка актуального курса...
+        Загрузка акутального курса...
       </div>
     )
 
   return (
-    <main className="relative min-h-screen px-4 pt-10 pb-40 bg-gradient-to-b from-gray-50 via-white to-gray-100 overflow-hidden">
+    <main className="relative min-h-screen px-4 pt-10 pb-40 bg-gradient-to-b from-gray-50 via-white to-gray-100">
 
-      {/* Blur background */}
-      <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-green-300 rounded-full blur-3xl opacity-30" />
-      <div className="absolute -bottom-40 -right-40 w-[500px] h-[500px] bg-emerald-200 rounded-full blur-3xl opacity-30" />
+      <div className="max-w-md mx-auto space-y-12">
 
-      <div className="relative max-w-md mx-auto space-y-12">
+        <div className="bg-white shadow-2xl rounded-3xl p-6 space-y-6">
 
-        <div
-          className={`bg-white/70 backdrop-blur-2xl border border-white/40 shadow-2xl rounded-3xl p-6 space-y-6 transition-all duration-300 ${
-            animate ? "scale-[1.02]" : ""
-          }`}
-        >
-          {/* ===== HEADER (ДВЕ СТРОКИ) ===== */}
+          {/* HEADER */}
           <div className="text-center space-y-2">
             <h1 className="text-3xl font-semibold">
               Быстрый обмен валют
             </h1>
-
-            <div className="text-3xl font-semibold flex items-center justify-center gap-3">
-              KZT
-              <span
-                className={`transition-transform duration-300 ${
-                  direction === "rub_to_kzt" ? "rotate-180" : ""
-                }`}
-              >
-                ⇄
-              </span>
-              RUB
+            <div className="text-3xl font-semibold">
+              KZT ⇄ RUB
             </div>
-
             <p className="text-sm text-gray-600">
               Онлайн • Без комиссий • 1–5 минут
             </p>
@@ -164,7 +124,7 @@ export default function ExchangePage() {
           {/* SWITCH */}
           <div className="bg-gray-100 rounded-2xl p-1 flex">
             <button
-              onClick={() => changeDirection("kzt_to_rub")}
+              onClick={() => setDirection("kzt_to_rub")}
               className={`flex-1 py-3 rounded-xl ${
                 direction === "kzt_to_rub"
                   ? "bg-green-600 text-white"
@@ -173,9 +133,8 @@ export default function ExchangePage() {
             >
               Купить РУБЛИ
             </button>
-
             <button
-              onClick={() => changeDirection("rub_to_kzt")}
+              onClick={() => setDirection("rub_to_kzt")}
               className={`flex-1 py-3 rounded-xl ${
                 direction === "rub_to_kzt"
                   ? "bg-green-600 text-white"
@@ -191,7 +150,6 @@ export default function ExchangePage() {
             <p className="text-sm text-gray-600 mb-1">
               Вы отдаёте ({giveCurrency})
             </p>
-
             <input
               type="number"
               value={amount}
@@ -212,31 +170,30 @@ export default function ExchangePage() {
           )}
 
           {/* RATE */}
-          <div className="bg-gray-100 rounded-2xl p-5 text-center relative">
+          <div className="bg-gray-100 rounded-2xl p-5 text-center">
             <div className="flex items-center justify-center gap-2">
               <p className="text-sm text-gray-600">Курс</p>
-
-              <div className="relative" ref={popoverRef}>
-                <button
-                  onClick={() => setShowInfo(!showInfo)}
-                  className="w-5 h-5 flex items-center justify-center rounded-full bg-white/60 backdrop-blur-md border border-white/50 text-xs font-bold text-gray-700 shadow-sm hover:scale-110 transition"
-                >
-                  ℹ
-                </button>
-
-                {showInfo && (
-                  <div className="absolute top-8 right-0 w-64 bg-white/70 backdrop-blur-2xl border border-white/40 shadow-2xl rounded-xl p-3 text-xs text-gray-700 leading-relaxed">
-                    Курс формируется на основании рыночных данных и может изменяться в течение дня.
-                  </div>
-                )}
-              </div>
+              <button
+                onClick={() => setShowInfo(!showInfo)}
+                className="w-5 h-5 rounded-full bg-gray-300 text-xs font-bold"
+              >
+                i
+              </button>
             </div>
 
             <p className="text-3xl font-black mt-2">
-              1 {direction === "kzt_to_rub" ? "RUB" : "KZT"} ={" "}
-              {formatNumber(rate)}{" "}
+              1 {direction === "kzt_to_rub" ? "RUB" : "KZT"} =
+              {" "}{formatNumber(rate)}{" "}
               {direction === "kzt_to_rub" ? "KZT" : "RUB"}
             </p>
+
+            {/* Центрированный блок */}
+            {showInfo && (
+              <div className="mt-4 text-sm text-gray-600 bg-white border border-gray-200 rounded-xl p-3">
+                Курс формируется на основании рыночных данных
+                и может изменяться в течение дня.
+              </div>
+            )}
           </div>
         </div>
 
@@ -250,7 +207,7 @@ export default function ExchangePage() {
         <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto">
           <button
             onClick={() => setShowModal(true)}
-            className="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-500 text-white rounded-2xl font-semibold text-lg shadow-2xl"
+            className="w-full py-4 bg-green-600 text-white rounded-2xl font-semibold text-lg"
           >
             Обменять сейчас
           </button>
@@ -259,8 +216,24 @@ export default function ExchangePage() {
 
       {/* MODAL */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-end justify-center z-50">
-          <div className="bg-white w-full rounded-t-3xl p-6 space-y-4">
+        <div
+          className="fixed inset-0 bg-black/40 flex items-end justify-center z-50"
+          onClick={() => setShowModal(false)}
+        >
+          <div
+            className="bg-white w-full rounded-t-3xl p-6 space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Кнопка закрытия */}
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-gray-500 text-xl"
+              >
+                ✕
+              </button>
+            </div>
+
             {!submitted ? (
               <form onSubmit={handleSubmit} className="space-y-4">
                 <input
