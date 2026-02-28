@@ -18,6 +18,7 @@ export default function ExchangePage() {
   const [name, setName] = useState("")
   const [phone, setPhone] = useState("+7 ")
   const [submitted, setSubmitted] = useState(false)
+  const [isSending, setIsSending] = useState(false)
 
   const [showInfo, setShowInfo] = useState(false)
   const [lastUpdate, setLastUpdate] = useState<string>("")
@@ -50,6 +51,7 @@ export default function ExchangePage() {
         setLastUpdate(`Последнее обновление: ${lastLabel} по МСК`)
         setNextUpdate(`Следующее обновление: ${nextLabel} по МСК`)
       }
+
     } catch {
       setBaseRate(6.5)
     } finally {
@@ -65,7 +67,6 @@ export default function ExchangePage() {
 
   const getRate = useCallback(() => {
     if (!baseRate) return 0
-
     return direction === "kzt_to_rub"
       ? Math.round(baseRate * 1.029 * 100) / 100
       : Math.round(baseRate * 0.959 * 100) / 100
@@ -104,11 +105,14 @@ export default function ExchangePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (isSending) return
 
     const clean = phone.replace(/\D/g, "")
     if (clean.length !== 11) return
 
     try {
+      setIsSending(true)
+
       const response = await fetch("/api/telegram", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -127,7 +131,7 @@ export default function ExchangePage() {
       const data = await response.json()
 
       if (!data.success) {
-        console.error("Telegram send failed:", data)
+        setIsSending(false)
         return
       }
 
@@ -138,10 +142,11 @@ export default function ExchangePage() {
         setSubmitted(false)
         setName("")
         setPhone("+7 ")
+        setIsSending(false)
       }, 2000)
 
-    } catch (error) {
-      console.error("Submit error:", error)
+    } catch {
+      setIsSending(false)
     }
   }
 
@@ -159,7 +164,6 @@ export default function ExchangePage() {
 
         <div className="bg-white shadow-2xl rounded-3xl p-6 space-y-6">
 
-          {/* HEADER */}
           <div className="text-center space-y-2">
             <h1 className="text-3xl font-semibold">Быстрый обмен валют</h1>
             <div className="text-3xl font-semibold">KZT ⇄ RUB</div>
@@ -168,7 +172,6 @@ export default function ExchangePage() {
             </p>
           </div>
 
-          {/* SWITCH */}
           <div className="bg-gray-100 rounded-2xl p-1 flex">
             <button
               onClick={() => setDirection("kzt_to_rub")}
@@ -192,7 +195,6 @@ export default function ExchangePage() {
             </button>
           </div>
 
-          {/* INPUT */}
           <div>
             <p className="text-sm text-gray-600 mb-1">
               Вы отдаёте ({giveCurrency})
@@ -206,7 +208,6 @@ export default function ExchangePage() {
             />
           </div>
 
-          {/* RESULT */}
           {numAmount > 0 && (
             <div className="bg-green-50 border border-green-200 rounded-2xl p-4 text-center">
               <p className="text-sm text-gray-600 mb-1">Вы получите</p>
@@ -216,7 +217,6 @@ export default function ExchangePage() {
             </div>
           )}
 
-          {/* RATE */}
           <div className="bg-gray-100 rounded-2xl p-5 text-center">
             <div className="flex items-center justify-center gap-2">
               <p className="text-sm text-gray-600">Курс</p>
@@ -253,7 +253,6 @@ export default function ExchangePage() {
         <Footer />
       </div>
 
-      {/* CTA */}
       {numAmount > 0 && (
         <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto">
           <button
@@ -265,7 +264,6 @@ export default function ExchangePage() {
         </div>
       )}
 
-      {/* MODAL */}
       {showModal && (
         <div
           className="fixed inset-0 bg-black/40 flex items-end justify-center z-50"
@@ -298,8 +296,16 @@ export default function ExchangePage() {
                   onChange={(e) => setPhone(formatPhone(e.target.value))}
                   className="w-full p-4 border rounded-xl"
                 />
-                <button className="w-full py-3 bg-green-600 text-white rounded-xl">
-                  Отправить
+                <button
+                  type="submit"
+                  disabled={isSending}
+                  className={`w-full py-3 rounded-xl ${
+                    isSending
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-green-600 text-white"
+                  }`}
+                >
+                  {isSending ? "Отправка..." : "Отправить"}
                 </button>
               </form>
             ) : (
