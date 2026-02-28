@@ -8,6 +8,11 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { name, phone, direction, rate, giveAmount, giveCurrency, getAmount, getCurrency } = body
 
+    if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
+      console.error("Telegram env variables not set")
+      return NextResponse.json({ error: "Telegram not configured" }, { status: 500 })
+    }
+
     const now = new Date()
     const dateStr = now.toLocaleDateString("ru-RU", {
       day: "2-digit",
@@ -30,11 +35,6 @@ export async function POST(request: Request) {
 
 Отдаёт: ${giveAmount} ${giveCurrency}
 Получает: ${getAmount} ${getCurrency}`
-
-    if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
-      console.error("Telegram env variables not set")
-      return NextResponse.json({ error: "Telegram not configured" }, { status: 500 })
-    }
 
     const telegramResponse = await fetch(
       `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
