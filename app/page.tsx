@@ -18,7 +18,6 @@ export default function ExchangePage() {
   const [name, setName] = useState("")
   const [phone, setPhone] = useState("+7 ")
   const [submitted, setSubmitted] = useState(false)
-  const [isSending, setIsSending] = useState(false)
 
   const [showInfo, setShowInfo] = useState(false)
   const [lastUpdate, setLastUpdate] = useState<string>("")
@@ -31,7 +30,9 @@ export default function ExchangePage() {
       const res = await fetch("/api/rate", { cache: "no-store" })
       const data = await res.json()
 
-      if (data.rate) setBaseRate(data.rate)
+      if (data.rate) {
+        setBaseRate(data.rate)
+      }
 
       if (data.slot && data.day && data.nextSlot && data.nextDay) {
         const today = new Date().toISOString().split("T")[0]
@@ -64,6 +65,7 @@ export default function ExchangePage() {
 
   const getRate = useCallback(() => {
     if (!baseRate) return 0
+
     return direction === "kzt_to_rub"
       ? Math.round(baseRate * 1.029 * 100) / 100
       : Math.round(baseRate * 0.959 * 100) / 100
@@ -102,14 +104,11 @@ export default function ExchangePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (isSending) return
 
     const clean = phone.replace(/\D/g, "")
     if (clean.length !== 11) return
 
     try {
-      setIsSending(true)
-
       const response = await fetch("/api/telegram", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -128,28 +127,27 @@ export default function ExchangePage() {
       const data = await response.json()
 
       if (!data.success) {
-        setIsSending(false)
+        console.error("Telegram send failed:", data)
         return
       }
 
       setSubmitted(true)
 
-      // Лёгкая вибрация
+      // лёгкая вибрация
       if (typeof navigator !== "undefined" && "vibrate" in navigator) {
         navigator.vibrate(40)
       }
 
-      // Автозакрытие через 8 сек
+      // автозакрытие через 8 секунд
       setTimeout(() => {
         setShowModal(false)
         setSubmitted(false)
         setName("")
         setPhone("+7 ")
-        setIsSending(false)
       }, 8000)
 
-    } catch {
-      setIsSending(false)
+    } catch (error) {
+      console.error("Submit error:", error)
     }
   }
 
@@ -167,6 +165,7 @@ export default function ExchangePage() {
 
         <div className="bg-white shadow-2xl rounded-3xl p-6 space-y-6">
 
+          {/* HEADER */}
           <div className="text-center space-y-2">
             <h1 className="text-3xl font-semibold">Быстрый обмен валют</h1>
             <div className="text-3xl font-semibold">KZT ⇄ RUB</div>
@@ -175,6 +174,7 @@ export default function ExchangePage() {
             </p>
           </div>
 
+          {/* SWITCH */}
           <div className="bg-gray-100 rounded-2xl p-1 flex">
             <button
               onClick={() => setDirection("kzt_to_rub")}
@@ -198,6 +198,7 @@ export default function ExchangePage() {
             </button>
           </div>
 
+          {/* INPUT */}
           <div>
             <p className="text-sm text-gray-600 mb-1">
               Вы отдаёте ({giveCurrency})
@@ -211,6 +212,7 @@ export default function ExchangePage() {
             />
           </div>
 
+          {/* RESULT */}
           {numAmount > 0 && (
             <div className="bg-green-50 border border-green-200 rounded-2xl p-4 text-center">
               <p className="text-sm text-gray-600 mb-1">Вы получите</p>
@@ -219,6 +221,37 @@ export default function ExchangePage() {
               </p>
             </div>
           )}
+
+          {/* RATE */}
+          <div className="bg-gray-100 rounded-2xl p-5 text-center">
+            <div className="flex items-center justify-center gap-2">
+              <p className="text-sm text-gray-600">Курс</p>
+              <button
+                onClick={() => setShowInfo(!showInfo)}
+                className="w-5 h-5 rounded-full bg-gray-300 text-xs font-bold"
+              >
+                i
+              </button>
+            </div>
+
+            <p className="text-3xl font-black mt-2">
+              1 {direction === "kzt_to_rub" ? "RUB" : "KZT"} ={" "}
+              {formatNumber(rate)}{" "}
+              {direction === "kzt_to_rub" ? "KZT" : "RUB"}
+            </p>
+
+            {showInfo && (
+              <div className="mt-4 text-sm text-gray-600 bg-white border border-gray-200 rounded-xl p-3">
+                Курс формируется на основании рыночных данных и может изменяться в течение дня.
+                {lastUpdate && (
+                  <p className="text-xs text-red-500 mt-2">{lastUpdate}</p>
+                )}
+                {nextUpdate && (
+                  <p className="text-xs text-gray-500 mt-1">{nextUpdate}</p>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         <SocialProof />
@@ -226,6 +259,7 @@ export default function ExchangePage() {
         <Footer />
       </div>
 
+      {/* CTA */}
       {numAmount > 0 && (
         <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto">
           <button
@@ -237,18 +271,19 @@ export default function ExchangePage() {
         </div>
       )}
 
+      {/* MODAL */}
       {showModal && (
         <div
           className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4"
           onClick={() => setShowModal(false)}
         >
           <div
-            className="bg-white w-full max-w-md rounded-3xl p-6 space-y-4 relative"
+            className="bg-white w-full max-w-md rounded-3xl p-6 space-y-4 relative animate-fade-in"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl"
+              className="absolute top-4 right-4 text-gray-500 text-xl"
             >
               ✕
             </button>
@@ -272,28 +307,17 @@ export default function ExchangePage() {
                   className="w-full p-4 border rounded-xl"
                 />
 
-                <button
-                  type="submit"
-                  disabled={isSending}
-                  className={`w-full py-3 rounded-xl ${
-                    isSending
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-green-600 text-white"
-                  }`}
-                >
-                  {isSending ? "Отправка..." : "Отправить"}
+                <button className="w-full py-3 bg-green-600 text-white rounded-xl">
+                  Отправить
                 </button>
               </form>
             ) : (
-              <div className="text-center py-8 space-y-4">
-                <div className="text-5xl text-green-500 success-pop">
-                  ✔
+              <div className="text-center py-10">
+                <div className="text-6xl text-green-500 mb-4 success-pop">
+                  ✓
                 </div>
                 <div className="text-lg font-semibold">
                   Заявка отправлена
-                </div>
-                <div className="text-sm text-gray-600">
-                  Ожидайте звонка в течение получаса.
                 </div>
               </div>
             )}
