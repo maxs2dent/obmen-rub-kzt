@@ -120,7 +120,7 @@ export default function ExchangePage() {
   if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center">
-        Загрузка...
+        Загрузка актуального курса...
       </div>
     )
 
