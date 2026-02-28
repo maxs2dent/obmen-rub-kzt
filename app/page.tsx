@@ -39,12 +39,23 @@ const fetchRate = async () => {
     if (data.slot && data.day) {
       const today = new Date().toISOString().split("T")[0]
 
-      const label =
+      const lastLabel =
         data.day === today
           ? `сегодня в ${data.slot}`
           : `вчера в ${data.slot}`
 
-      setLastUpdate(`${label} по МСК`)
+      const nextLabel =
+        data.nextDay === today
+          ? `сегодня в ${data.nextSlot}`
+          : `завтра в ${data.nextSlot}`
+
+      setLastUpdate(
+        `Последнее обновление: ${lastLabel} по МСК`
+      )
+
+      setNextUpdate(
+        `Следующее обновление: ${nextLabel} по МСК`
+      )
     }
 
   } catch {
