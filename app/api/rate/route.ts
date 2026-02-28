@@ -9,7 +9,10 @@ export async function GET() {
   const now = Date.now()
 
   if (cachedRate && now - lastFetch < CACHE_TIME) {
-    return NextResponse.json({ rate: cachedRate })
+    return NextResponse.json({
+      rate: cachedRate,
+      updatedAt: lastFetch,
+    })
   }
 
   try {
@@ -24,8 +27,14 @@ export async function GET() {
     cachedRate = rate
     lastFetch = now
 
-    return NextResponse.json({ rate })
-  } catch (error) {
-    return NextResponse.json({ rate: cachedRate || 6.5 })
+    return NextResponse.json({
+      rate,
+      updatedAt: now,
+    })
+  } catch {
+    return NextResponse.json({
+      rate: cachedRate || 6.5,
+      updatedAt: lastFetch,
+    })
   }
 }
