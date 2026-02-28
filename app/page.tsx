@@ -36,7 +36,7 @@ const fetchRate = async () => {
     if (data.rate) {
       setBaseRate(data.rate)
 
-      if (data.updatedAt) {
+      if (data.updatedAt !== undefined) {
         const date = new Date(data.updatedAt)
         const formatted = date.toLocaleTimeString("ru-RU", {
           hour: "2-digit",
