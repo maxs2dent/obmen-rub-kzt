@@ -24,28 +24,35 @@ export default function ExchangePage() {
 
   /* ===== FETCH RATE FROM SERVER (3 раза в день) ===== */
 
-  const fetchRate = async () => {
-    try {
-      const res = await fetch("/api/rate", {
-        cache: "no-store",
-      })
+const fetchRate = async () => {
+  try {
+    const res = await fetch("/api/rate", {
+      cache: "no-store",
+    })
 
-      const data = await res.json()
+    const data = await res.json()
 
-      if (data.rate) {
-        setBaseRate(data.rate)
-      }
-
-      if (data.slot) {
-        setLastUpdate(`сегодня в ${data.slot}`)
-      }
-
-    } catch {
-      setBaseRate(6.5)
-    } finally {
-      setLoading(false)
+    if (data.rate) {
+      setBaseRate(data.rate)
     }
+
+    if (data.slot && data.day) {
+      const today = new Date().toISOString().split("T")[0]
+
+      const label =
+        data.day === today
+          ? `сегодня в ${data.slot}`
+          : `вчера в ${data.slot}`
+
+      setLastUpdate(`${label} по МСК`)
+    }
+
+  } catch {
+    setBaseRate(6.5)
+  } finally {
+    setLoading(false)
   }
+}
 
   useEffect(() => {
     fetchRate()
