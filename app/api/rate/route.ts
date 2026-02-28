@@ -14,7 +14,7 @@ export async function GET() {
 
   try {
     const res = await fetch(
-      "https://api.exchangerate.host/latest?base=RUB&symbols=KZT&access_key=ТВОЙ_КЛЮЧ",
+      "https://api.exchangerate.host/latest?base=RUB&symbols=KZT&access_key=94ea7a3c240ef15e6112812758e28039",
       { cache: "no-store" }
     )
 
