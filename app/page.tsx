@@ -31,9 +31,7 @@ export default function ExchangePage() {
       const res = await fetch("/api/rate", { cache: "no-store" })
       const data = await res.json()
 
-      if (data.rate) {
-        setBaseRate(data.rate)
-      }
+      if (data.rate) setBaseRate(data.rate)
 
       if (data.slot && data.day && data.nextSlot && data.nextDay) {
         const today = new Date().toISOString().split("T")[0]
@@ -51,7 +49,6 @@ export default function ExchangePage() {
         setLastUpdate(`Последнее обновление: ${lastLabel} по МСК`)
         setNextUpdate(`Следующее обновление: ${nextLabel} по МСК`)
       }
-
     } catch {
       setBaseRate(6.5)
     } finally {
@@ -90,6 +87,8 @@ export default function ExchangePage() {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     })
+
+  /* ===== PHONE FORMAT ===== */
 
   const formatPhone = (value: string) => {
     const digits = value.replace(/\D/g, "").slice(0, 11)
@@ -137,26 +136,29 @@ export default function ExchangePage() {
 
       setSubmitted(true)
 
+      if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+        navigator.vibrate(40)
+      }
+
       setTimeout(() => {
         setShowModal(false)
         setSubmitted(false)
         setName("")
         setPhone("+7 ")
         setIsSending(false)
-      }, 2000)
+      }, 8000)
 
     } catch {
       setIsSending(false)
     }
   }
 
-  if (loading) {
+  if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center">
         Загрузка курса...
       </div>
     )
-  }
 
   return (
     <main className="relative min-h-screen px-4 pt-10 pb-40 bg-gradient-to-b from-gray-50 via-white to-gray-100">
@@ -172,29 +174,6 @@ export default function ExchangePage() {
             </p>
           </div>
 
-          <div className="bg-gray-100 rounded-2xl p-1 flex">
-            <button
-              onClick={() => setDirection("kzt_to_rub")}
-              className={`flex-1 py-3 rounded-xl ${
-                direction === "kzt_to_rub"
-                  ? "bg-green-600 text-white"
-                  : "text-gray-600"
-              }`}
-            >
-              Купить РУБЛИ
-            </button>
-            <button
-              onClick={() => setDirection("rub_to_kzt")}
-              className={`flex-1 py-3 rounded-xl ${
-                direction === "rub_to_kzt"
-                  ? "bg-green-600 text-white"
-                  : "text-gray-600"
-              }`}
-            >
-              Купить ТЕНГЕ
-            </button>
-          </div>
-
           <div>
             <p className="text-sm text-gray-600 mb-1">
               Вы отдаёте ({giveCurrency})
@@ -207,45 +186,6 @@ export default function ExchangePage() {
               className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-4 text-xl font-semibold"
             />
           </div>
-
-          {numAmount > 0 && (
-            <div className="bg-green-50 border border-green-200 rounded-2xl p-4 text-center">
-              <p className="text-sm text-gray-600 mb-1">Вы получите</p>
-              <p className="text-2xl font-bold text-green-600">
-                {formatNumber(result)} {getCurrency}
-              </p>
-            </div>
-          )}
-
-          <div className="bg-gray-100 rounded-2xl p-5 text-center">
-            <div className="flex items-center justify-center gap-2">
-              <p className="text-sm text-gray-600">Курс</p>
-              <button
-                onClick={() => setShowInfo(!showInfo)}
-                className="w-5 h-5 rounded-full bg-gray-300 text-xs font-bold"
-              >
-                i
-              </button>
-            </div>
-
-            <p className="text-3xl font-black mt-2">
-              1 {direction === "kzt_to_rub" ? "RUB" : "KZT"} ={" "}
-              {formatNumber(rate)}{" "}
-              {direction === "kzt_to_rub" ? "KZT" : "RUB"}
-            </p>
-
-            {showInfo && (
-              <div className="mt-4 text-sm text-gray-600 bg-white border border-gray-200 rounded-xl p-3">
-                Курс формируется на основании рыночных данных и может изменяться в течение дня.
-                {lastUpdate && (
-                  <p className="text-xs text-red-500 mt-2">{lastUpdate}</p>
-                )}
-                {nextUpdate && (
-                  <p className="text-xs text-gray-500 mt-1">{nextUpdate}</p>
-                )}
-              </div>
-            )}
-          </div>
         </div>
 
         <SocialProof />
@@ -253,34 +193,22 @@ export default function ExchangePage() {
         <Footer />
       </div>
 
-      {numAmount > 0 && (
-        <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto">
-          <button
-            onClick={() => setShowModal(true)}
-            className="w-full py-4 bg-green-600 text-white rounded-2xl font-semibold text-lg"
-          >
-            Обменять сейчас
-          </button>
-        </div>
-      )}
-
+      {/* MODAL */}
       {showModal && (
         <div
-          className="fixed inset-0 bg-black/40 flex items-end justify-center z-50"
+          className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4"
           onClick={() => setShowModal(false)}
         >
           <div
-            className="bg-white w-full rounded-t-3xl p-6 space-y-4"
+            className="bg-white w-full max-w-md rounded-3xl p-6 space-y-4 relative"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex justify-end">
-              <button
-                onClick={() => setShowModal(false)}
-                className="text-gray-500 text-xl"
-              >
-                ✕
-              </button>
-            </div>
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl"
+            >
+              ✕
+            </button>
 
             {!submitted ? (
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -291,11 +219,17 @@ export default function ExchangePage() {
                   required
                   className="w-full p-4 border rounded-xl"
                 />
+
+                {/* ЦИФРОВАЯ КЛАВИАТУРА */}
                 <input
+                  type="tel"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   value={phone}
                   onChange={(e) => setPhone(formatPhone(e.target.value))}
                   className="w-full p-4 border rounded-xl"
                 />
+
                 <button
                   type="submit"
                   disabled={isSending}
@@ -309,10 +243,35 @@ export default function ExchangePage() {
                 </button>
               </form>
             ) : (
-              <div className="text-center py-10">
-                <div className="text-6xl text-green-500 mb-4">✓</div>
+              <div className="text-center py-8 space-y-4">
+                <div className="text-5xl text-green-500 animate-[successPop_0.4s_ease-out_forwards]">
+                  ✔
+                </div>
+
                 <div className="text-lg font-semibold">
                   Заявка отправлена
+                </div>
+
+                <div className="text-sm text-gray-600 leading-relaxed">
+                  <p>Ожидайте звонка в течение получаса.</p>
+                  <p className="mt-3">
+                    Если срочно — напишите нам в{" "}
+                    <a
+                      href="https://t.me/max2dent"
+                      target="_blank"
+                      className="text-green-600 font-medium hover:underline"
+                    >
+                      Telegram
+                    </a>{" "}
+                    или{" "}
+                    <a
+                      href="https://wa.me/+79134666695"
+                      target="_blank"
+                      className="text-green-600 font-medium hover:underline"
+                    >
+                      WhatsApp
+                    </a>.
+                  </p>
                 </div>
               </div>
             )}
