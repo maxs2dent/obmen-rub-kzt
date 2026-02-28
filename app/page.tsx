@@ -23,14 +23,11 @@ export default function ExchangePage() {
   const [lastUpdate, setLastUpdate] = useState<string>("")
   const [nextUpdate, setNextUpdate] = useState<string>("")
 
-  /* ===== FETCH RATE FROM SERVER ===== */
+  /* ===== FETCH RATE ===== */
 
   const fetchRate = async () => {
     try {
-      const res = await fetch("/api/rate", {
-        cache: "no-store",
-      })
-
+      const res = await fetch("/api/rate", { cache: "no-store" })
       const data = await res.json()
 
       if (data.rate) {
@@ -50,15 +47,9 @@ export default function ExchangePage() {
             ? `сегодня в ${data.nextSlot}`
             : `завтра в ${data.nextSlot}`
 
-        setLastUpdate(
-          `Последнее обновление: ${lastLabel} по МСК`
-        )
-
-        setNextUpdate(
-          `Следующее обновление: ${nextLabel} по МСК`
-        )
+        setLastUpdate(`Последнее обновление: ${lastLabel} по МСК`)
+        setNextUpdate(`Следующее обновление: ${nextLabel} по МСК`)
       }
-
     } catch {
       setBaseRate(6.5)
     } finally {
@@ -109,43 +100,69 @@ export default function ExchangePage() {
     return formatted
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  /* ===== SUBMIT ===== */
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
     const clean = phone.replace(/\D/g, "")
     if (clean.length !== 11) return
 
-    setSubmitted(true)
+    try {
+      const response = await fetch("/api/telegram", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          phone,
+          direction,
+          rate,
+          giveAmount: numAmount,
+          giveCurrency,
+          getAmount: result,
+          getCurrency,
+        }),
+      })
 
-    setTimeout(() => {
-      setShowModal(false)
-      setSubmitted(false)
-      setName("")
-      setPhone("+7 ")
-    }, 2000)
+      const data = await response.json()
+
+      if (!data.success) {
+        console.error("Telegram send failed:", data)
+        return
+      }
+
+      setSubmitted(true)
+
+      setTimeout(() => {
+        setShowModal(false)
+        setSubmitted(false)
+        setName("")
+        setPhone("+7 ")
+      }, 2000)
+
+    } catch (error) {
+      console.error("Submit error:", error)
+    }
   }
 
-  if (loading)
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         Загрузка курса...
       </div>
     )
+  }
 
   return (
     <main className="relative min-h-screen px-4 pt-10 pb-40 bg-gradient-to-b from-gray-50 via-white to-gray-100">
-
       <div className="max-w-md mx-auto space-y-12">
 
         <div className="bg-white shadow-2xl rounded-3xl p-6 space-y-6">
 
           {/* HEADER */}
           <div className="text-center space-y-2">
-            <h1 className="text-3xl font-semibold">
-              Быстрый обмен валют
-            </h1>
-            <div className="text-3xl font-semibold">
-              KZT ⇄ RUB
-            </div>
+            <h1 className="text-3xl font-semibold">Быстрый обмен валют</h1>
+            <div className="text-3xl font-semibold">KZT ⇄ RUB</div>
             <p className="text-sm text-gray-600">
               Онлайн • Без комиссий • 1–5 минут
             </p>
@@ -212,26 +229,19 @@ export default function ExchangePage() {
             </div>
 
             <p className="text-3xl font-black mt-2">
-              1 {direction === "kzt_to_rub" ? "RUB" : "KZT"} =
-              {" "}{formatNumber(rate)}{" "}
+              1 {direction === "kzt_to_rub" ? "RUB" : "KZT"} ={" "}
+              {formatNumber(rate)}{" "}
               {direction === "kzt_to_rub" ? "KZT" : "RUB"}
             </p>
 
             {showInfo && (
               <div className="mt-4 text-sm text-gray-600 bg-white border border-gray-200 rounded-xl p-3">
-                Курс формируется на основании рыночных данных
-                и может изменяться в течение дня.
-
+                Курс формируется на основании рыночных данных и может изменяться в течение дня.
                 {lastUpdate && (
-                  <p className="text-xs text-red-500 mt-2">
-                    {lastUpdate}
-                  </p>
+                  <p className="text-xs text-red-500 mt-2">{lastUpdate}</p>
                 )}
-
                 {nextUpdate && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    {nextUpdate}
-                  </p>
+                  <p className="text-xs text-gray-500 mt-1">{nextUpdate}</p>
                 )}
               </div>
             )}
