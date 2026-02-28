@@ -61,8 +61,8 @@ useEffect(() => {
   const getRate = useCallback(() => {
     if (!baseRate) return 0
     return direction === "kzt_to_rub"
-      ? Math.round(baseRate * 1.034 * 100) / 100
-      : Math.round(baseRate * 0.961 * 100) / 100
+      ? Math.round(baseRate * 1.032 * 100) / 100
+      : Math.round(baseRate * 0.959 * 100) / 100
   }, [baseRate, direction])
 
   const rate = getRate()
