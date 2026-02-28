@@ -194,6 +194,12 @@ export default function ExchangePage() {
               {formatNumber(rate)}{" "}
               {direction === "kzt_to_rub" ? "KZT" : "RUB"}
             </p>
+
+            {/* ДИСКЛЕЙМЕР */}
+            <p className="text-xs text-gray-500 mt-3 leading-relaxed">
+              Курс формируется на основании рыночных данных
+              и может изменяться в течение дня.
+            </p>
           </div>
         </div>
 
