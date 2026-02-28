@@ -3,38 +3,47 @@ import { NextResponse } from "next/server"
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID
 
+let lastRequestTime = 0
+const REQUEST_COOLDOWN = 15000
+
 export async function POST(request: Request) {
   try {
+    const nowTime = Date.now()
+
+    if (nowTime - lastRequestTime < REQUEST_COOLDOWN) {
+      return NextResponse.json(
+        { error: "Too many requests" },
+        { status: 429 }
+      )
+    }
+
+    lastRequestTime = nowTime
+
     const body = await request.json()
     const { name, phone, direction, rate, giveAmount, giveCurrency, getAmount, getCurrency } = body
 
     if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
-      console.error("Telegram env variables not set")
       return NextResponse.json({ error: "Telegram not configured" }, { status: 500 })
     }
 
     const now = new Date()
-    const dateStr = now.toLocaleDateString("ru-RU", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    })
-    const timeStr = now.toLocaleTimeString("ru-RU", {
-      hour: "2-digit",
-      minute: "2-digit",
-    })
+    const dateStr = now.toLocaleDateString("ru-RU")
+    const timeStr = now.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })
 
-    const message = `📩 Новая заявка
+    const message = `
+<b>📩 Новая заявка</b>
 
-Дата и время: ${dateStr} ${timeStr}
-Имя: ${name}
-Телефон: ${phone}
+<b>Дата:</b> ${dateStr} ${timeStr}
 
-Направление: ${direction}
-Курс: ${rate}
+<b>Имя:</b> ${name}
+<b>Телефон:</b> ${phone}
 
-Отдаёт: ${giveAmount} ${giveCurrency}
-Получает: ${getAmount} ${getCurrency}`
+<b>Направление:</b> ${direction === "kzt_to_rub" ? "KZT → RUB" : "RUB → KZT"}
+<b>Курс:</b> ${rate}
+
+<b>Отдаёт:</b> ${giveAmount} ${giveCurrency}
+<b>Получает:</b> ${getAmount} ${getCurrency}
+`
 
     const telegramResponse = await fetch(
       `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
@@ -44,6 +53,7 @@ export async function POST(request: Request) {
         body: JSON.stringify({
           chat_id: TELEGRAM_CHAT_ID,
           text: message,
+          parse_mode: "HTML",
         }),
       }
     )
@@ -51,13 +61,12 @@ export async function POST(request: Request) {
     const telegramData = await telegramResponse.json()
 
     if (!telegramData.ok) {
-      console.error("Telegram error:", telegramData)
       return NextResponse.json({ error: "Telegram failed" }, { status: 500 })
     }
 
     return NextResponse.json({ success: true })
-  } catch (error) {
-    console.error("Server error:", error)
+
+  } catch {
     return NextResponse.json({ error: "Failed to send" }, { status: 500 })
   }
 }
