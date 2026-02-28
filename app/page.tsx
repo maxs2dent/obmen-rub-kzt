@@ -21,25 +21,40 @@ export default function ExchangePage() {
 
   const [showInfo, setShowInfo] = useState(false)
 
-  /* ===== FETCH RATE ===== */
+  /* ===== FETCH RATE FROM SERVER (3 раза в день) ===== */
 
-  const fetchRate = async () => {
-    try {
-      const res = await fetch("https://api.exchangerate-api.com/v4/latest/RUB")
-      const data = await res.json()
-      setBaseRate(data.rates.KZT)
-    } catch {
-      setBaseRate(6.54)
-    } finally {
-      setLoading(false)
+const [lastUpdate, setLastUpdate] = useState<string>("")
+
+const fetchRate = async () => {
+  try {
+    const res = await fetch("/api/rate", {
+      cache: "no-store",
+    })
+
+    const data = await res.json()
+
+    if (data.rate) {
+      setBaseRate(data.rate)
+
+      if (data.updatedAt) {
+        const date = new Date(data.updatedAt)
+        const formatted = date.toLocaleTimeString("ru-RU", {
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+        setLastUpdate(`сегодня в ${formatted}`)
+      }
     }
+  } catch {
+    setBaseRate(6.5)
+  } finally {
+    setLoading(false)
   }
+}
 
-  useEffect(() => {
-    fetchRate()
-    const interval = setInterval(fetchRate, 20000)
-    return () => clearInterval(interval)
-  }, [])
+useEffect(() => {
+  fetchRate()
+}, [])
 
   /* ===== RATE LOGIC ===== */
 
