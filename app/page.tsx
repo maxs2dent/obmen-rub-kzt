@@ -166,7 +166,7 @@ export default function ExchangePage() {
                   : "text-gray-600"
               }`}
             >
-              KZT → RUB
+              Купить РУБЛИ
             </button>
             <button
               onClick={() => changeDirection("rub_to_kzt")}
@@ -176,7 +176,7 @@ export default function ExchangePage() {
                   : "text-gray-600"
               }`}
             >
-              RUB → KZT
+              Купить ТЕНГЕ
             </button>
           </div>
 
