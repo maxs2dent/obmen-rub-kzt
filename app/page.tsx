@@ -207,6 +207,11 @@ useEffect(() => {
               <div className="mt-4 text-sm text-gray-600 bg-white border border-gray-200 rounded-xl p-3">
                 Курс формируется на основании рыночных данных
                 и может изменяться в течение дня.
+                {lastUpdate && (
+  <p className="text-xs text-red-500 mt-2">
+    последнее обновление: {lastUpdate}
+  </p>
+)}
               </div>
             )}
           </div>
