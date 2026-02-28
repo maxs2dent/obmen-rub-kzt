@@ -21,49 +21,50 @@ export default function ExchangePage() {
 
   const [showInfo, setShowInfo] = useState(false)
   const [lastUpdate, setLastUpdate] = useState<string>("")
+  const [nextUpdate, setNextUpdate] = useState<string>("")
 
-  /* ===== FETCH RATE FROM SERVER (3 раза в день) ===== */
+  /* ===== FETCH RATE FROM SERVER ===== */
 
-const fetchRate = async () => {
-  try {
-    const res = await fetch("/api/rate", {
-      cache: "no-store",
-    })
+  const fetchRate = async () => {
+    try {
+      const res = await fetch("/api/rate", {
+        cache: "no-store",
+      })
 
-    const data = await res.json()
+      const data = await res.json()
 
-    if (data.rate) {
-      setBaseRate(data.rate)
+      if (data.rate) {
+        setBaseRate(data.rate)
+      }
+
+      if (data.slot && data.day && data.nextSlot && data.nextDay) {
+        const today = new Date().toISOString().split("T")[0]
+
+        const lastLabel =
+          data.day === today
+            ? `сегодня в ${data.slot}`
+            : `вчера в ${data.slot}`
+
+        const nextLabel =
+          data.nextDay === today
+            ? `сегодня в ${data.nextSlot}`
+            : `завтра в ${data.nextSlot}`
+
+        setLastUpdate(
+          `Последнее обновление: ${lastLabel} по МСК`
+        )
+
+        setNextUpdate(
+          `Следующее обновление: ${nextLabel} по МСК`
+        )
+      }
+
+    } catch {
+      setBaseRate(6.5)
+    } finally {
+      setLoading(false)
     }
-
-    if (data.slot && data.day) {
-      const today = new Date().toISOString().split("T")[0]
-
-      const lastLabel =
-        data.day === today
-          ? `сегодня в ${data.slot}`
-          : `вчера в ${data.slot}`
-
-      const nextLabel =
-        data.nextDay === today
-          ? `сегодня в ${data.nextSlot}`
-          : `завтра в ${data.nextSlot}`
-
-      setLastUpdate(
-        `Последнее обновление: ${lastLabel} по МСК`
-      )
-
-      setNextUpdate(
-        `Следующее обновление: ${nextLabel} по МСК`
-      )
-    }
-
-  } catch {
-    setBaseRate(6.5)
-  } finally {
-    setLoading(false)
   }
-}
 
   useEffect(() => {
     fetchRate()
@@ -220,9 +221,16 @@ const fetchRate = async () => {
               <div className="mt-4 text-sm text-gray-600 bg-white border border-gray-200 rounded-xl p-3">
                 Курс формируется на основании рыночных данных
                 и может изменяться в течение дня.
+
                 {lastUpdate && (
                   <p className="text-xs text-red-500 mt-2">
-                    Последнее обновление: {lastUpdate}
+                    {lastUpdate}
+                  </p>
+                )}
+
+                {nextUpdate && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    {nextUpdate}
                   </p>
                 )}
               </div>
