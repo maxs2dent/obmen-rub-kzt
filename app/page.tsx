@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import SocialProof from "@/components/sections/SocialProof"
 import Faq from "@/components/sections/Faq"
 import Footer from "@/components/sections/Footer"
@@ -20,6 +20,9 @@ export default function ExchangePage() {
   const [phone, setPhone] = useState("+7 ")
   const [submitted, setSubmitted] = useState(false)
 
+  const [showInfo, setShowInfo] = useState(false)
+  const popoverRef = useRef<HTMLDivElement | null>(null)
+
   const fetchRate = async () => {
     try {
       const res = await fetch("https://api.exchangerate-api.com/v4/latest/RUB")
@@ -36,6 +39,16 @@ export default function ExchangePage() {
     fetchRate()
     const interval = setInterval(fetchRate, 20000)
     return () => clearInterval(interval)
+  }, [])
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
+        setShowInfo(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
   const changeDirection = (dir: Direction) => {
@@ -72,14 +85,10 @@ export default function ExchangePage() {
   const formatPhone = (value: string) => {
     const digits = value.replace(/\D/g, "").slice(0, 11)
     let formatted = "+7 "
-    if (digits.length > 1)
-      formatted += "(" + digits.slice(1, 4)
-    if (digits.length >= 4)
-      formatted += ") " + digits.slice(4, 7)
-    if (digits.length >= 7)
-      formatted += "-" + digits.slice(7, 9)
-    if (digits.length >= 9)
-      formatted += "-" + digits.slice(9, 11)
+    if (digits.length > 1) formatted += "(" + digits.slice(1, 4)
+    if (digits.length >= 4) formatted += ") " + digits.slice(4, 7)
+    if (digits.length >= 7) formatted += "-" + digits.slice(7, 9)
+    if (digits.length >= 9) formatted += "-" + digits.slice(9, 11)
     return formatted
   }
 
@@ -174,31 +183,31 @@ export default function ExchangePage() {
             />
           </div>
 
-          {/* RECEIVE */}
-          {numAmount > 0 && (
-            <div className="bg-green-50 border border-green-200 rounded-2xl p-4 text-center">
-              <p className="text-sm text-gray-600 mb-1">
-                Вы получите
-              </p>
-              <p className="text-2xl font-bold text-green-600">
-                {formatNumber(result)} {getCurrency}
-              </p>
-            </div>
-          )}
-
           {/* RATE */}
-          <div className="bg-gray-100 rounded-2xl p-5 text-center">
-            <p className="text-sm text-gray-600">Курс</p>
-            <p className="text-3xl font-black">
+          <div className="bg-gray-100 rounded-2xl p-5 text-center relative">
+            <div className="flex items-center justify-center gap-2">
+              <p className="text-sm text-gray-600">Курс</p>
+
+              <div className="relative" ref={popoverRef}>
+                <button
+                  onClick={() => setShowInfo(!showInfo)}
+                  className="w-5 h-5 flex items-center justify-center rounded-full bg-gray-300 text-xs font-bold text-gray-700 hover:bg-gray-400 transition"
+                >
+                  ℹ
+                </button>
+
+                {showInfo && (
+                  <div className="absolute top-8 right-0 w-64 bg-white shadow-xl border border-gray-200 rounded-xl p-3 text-xs text-gray-600 leading-relaxed z-50">
+                    Курс формируется на основании рыночных данных и может изменяться в течение дня.
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <p className="text-3xl font-black mt-2">
               1 {direction === "kzt_to_rub" ? "RUB" : "KZT"} ={" "}
               {formatNumber(rate)}{" "}
               {direction === "kzt_to_rub" ? "KZT" : "RUB"}
-            </p>
-
-            {/* ДИСКЛЕЙМЕР */}
-            <p className="text-xs text-gray-500 mt-3 leading-relaxed">
-              Курс формируется на основании рыночных данных
-              и может изменяться в течение дня.
             </p>
           </div>
         </div>
@@ -210,17 +219,13 @@ export default function ExchangePage() {
 
       {/* STICKY BUTTON */}
       {numAmount > 0 && (
-        <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto space-y-3">
+        <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto">
           <button
             onClick={() => setShowModal(true)}
             className="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-500 text-white rounded-2xl font-semibold text-lg shadow-2xl"
           >
             Обменять сейчас
           </button>
-
-          <div className="text-center text-xs text-gray-600">
-            🔒 Безопасно • ⏱ 1–5 минут • 💳 Банковские карты
-          </div>
         </div>
       )}
 
@@ -239,9 +244,7 @@ export default function ExchangePage() {
                 />
                 <input
                   value={phone}
-                  onChange={(e) =>
-                    setPhone(formatPhone(e.target.value))
-                  }
+                  onChange={(e) => setPhone(formatPhone(e.target.value))}
                   className="w-full p-4 border rounded-xl"
                 />
                 <button className="w-full py-3 bg-green-600 text-white rounded-xl">
