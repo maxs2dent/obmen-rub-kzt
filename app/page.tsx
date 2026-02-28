@@ -23,7 +23,7 @@ export default function ExchangePage() {
   const [showInfo, setShowInfo] = useState(false)
   const popoverRef = useRef<HTMLDivElement | null>(null)
 
-  /* ================= FETCH RATE ================= */
+  /* ===== FETCH RATE ===== */
 
   const fetchRate = async () => {
     try {
@@ -43,7 +43,7 @@ export default function ExchangePage() {
     return () => clearInterval(interval)
   }, [])
 
-  /* ================= CLOSE POPOVER OUTSIDE ================= */
+  /* ===== CLOSE POPOVER ===== */
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -55,7 +55,7 @@ export default function ExchangePage() {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
-  /* ================= RATE LOGIC ================= */
+  /* ===== RATE LOGIC ===== */
 
   const getRate = useCallback(() => {
     if (!baseRate) return 0
@@ -83,7 +83,7 @@ export default function ExchangePage() {
       maximumFractionDigits: 2,
     })
 
-  /* ================= UX ================= */
+  /* ===== UX ===== */
 
   const changeDirection = (dir: Direction) => {
     setDirection(dir)
@@ -138,10 +138,14 @@ export default function ExchangePage() {
             animate ? "scale-[1.02]" : ""
           }`}
         >
-          {/* HEADER */}
+          {/* ===== HEADER (ДВЕ СТРОКИ) ===== */}
           <div className="text-center space-y-2">
-            <h1 className="text-3xl font-semibold flex items-center justify-center gap-2">
-              Обмен KZT
+            <h1 className="text-3xl font-semibold">
+              Быстрый обмен валют
+            </h1>
+
+            <div className="text-3xl font-semibold flex items-center justify-center gap-3">
+              KZT
               <span
                 className={`transition-transform duration-300 ${
                   direction === "rub_to_kzt" ? "rotate-180" : ""
@@ -150,7 +154,8 @@ export default function ExchangePage() {
                 ⇄
               </span>
               RUB
-            </h1>
+            </div>
+
             <p className="text-sm text-gray-600">
               Онлайн • Без комиссий • 1–5 минут
             </p>
@@ -168,6 +173,7 @@ export default function ExchangePage() {
             >
               Купить РУБЛИ
             </button>
+
             <button
               onClick={() => changeDirection("rub_to_kzt")}
               className={`flex-1 py-3 rounded-xl ${
@@ -182,7 +188,10 @@ export default function ExchangePage() {
 
           {/* INPUT */}
           <div>
-            <p className="text-sm text-gray-600 mb-1">Вы отдаёте</p>
+            <p className="text-sm text-gray-600 mb-1">
+              Вы отдаёте ({giveCurrency})
+            </p>
+
             <input
               type="number"
               value={amount}
@@ -202,7 +211,7 @@ export default function ExchangePage() {
             </div>
           )}
 
-          {/* RATE + GLASS POPOVER */}
+          {/* RATE */}
           <div className="bg-gray-100 rounded-2xl p-5 text-center relative">
             <div className="flex items-center justify-center gap-2">
               <p className="text-sm text-gray-600">Курс</p>
@@ -216,7 +225,7 @@ export default function ExchangePage() {
                 </button>
 
                 {showInfo && (
-                  <div className="absolute top-8 right-0 w-64 bg-white/70 backdrop-blur-2xl border border-white/40 shadow-2xl rounded-xl p-3 text-xs text-gray-700 leading-relaxed animate-fadeIn">
+                  <div className="absolute top-8 right-0 w-64 bg-white/70 backdrop-blur-2xl border border-white/40 shadow-2xl rounded-xl p-3 text-xs text-gray-700 leading-relaxed">
                     Курс формируется на основании рыночных данных и может изменяться в течение дня.
                   </div>
                 )}
@@ -273,7 +282,9 @@ export default function ExchangePage() {
             ) : (
               <div className="text-center py-10">
                 <div className="text-6xl text-green-500 mb-4">✓</div>
-                <div className="text-lg font-semibold">Заявка отправлена</div>
+                <div className="text-lg font-semibold">
+                  Заявка отправлена
+                </div>
               </div>
             )}
           </div>
