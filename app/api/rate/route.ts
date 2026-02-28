@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server"
 
 let cachedRate: number | null = null
-let lastSlot: string | null = null
-let lastDay: string | null = null
-
-const SLOTS = ["09:00", "15:00", "21:00"]
+let cachedSlot: string | null = null
+let cachedDay: string | null = null
 
 function getMoscowTime() {
   const now = new Date()
@@ -17,52 +15,57 @@ function getSlotInfo() {
   const hours = msk.getHours()
   const today = msk.toISOString().split("T")[0]
 
-  let currentSlot: string | null = null
-  let nextSlot: string | null = null
-  let lastDay = today
+  let currentSlot: string
+  let nextSlot: string
+  let currentDay = today
   let nextDay = today
 
   if (hours >= 21) {
     currentSlot = "21:00"
     nextSlot = "09:00"
+
     const tomorrow = new Date(msk)
     tomorrow.setDate(tomorrow.getDate() + 1)
     nextDay = tomorrow.toISOString().split("T")[0]
+
   } else if (hours >= 15) {
     currentSlot = "15:00"
     nextSlot = "21:00"
+
   } else if (hours >= 9) {
     currentSlot = "09:00"
     nextSlot = "15:00"
+
   } else {
     currentSlot = "21:00"
     nextSlot = "09:00"
 
     const yesterday = new Date(msk)
     yesterday.setDate(yesterday.getDate() - 1)
-    lastDay = yesterday.toISOString().split("T")[0]
+    currentDay = yesterday.toISOString().split("T")[0]
   }
 
   return {
     currentSlot,
+    currentDay,
     nextSlot,
-    lastDay,
     nextDay,
   }
 }
 
 export async function GET() {
-  const { currentSlot, nextSlot, lastDay, nextDay } = getSlotInfo()
+  const { currentSlot, currentDay, nextSlot, nextDay } = getSlotInfo()
 
+  // если слот и день не изменились — отдаём кеш
   if (
     cachedRate &&
-    lastSlot === currentSlot &&
-    lastDay === lastDay
+    cachedSlot === currentSlot &&
+    cachedDay === currentDay
   ) {
     return NextResponse.json({
       rate: cachedRate,
       slot: currentSlot,
-      day: lastDay,
+      day: currentDay,
       nextSlot,
       nextDay,
     })
@@ -81,21 +84,22 @@ export async function GET() {
     }
 
     cachedRate = data.rates.KZT
-    lastSlot = currentSlot
-    lastDay = lastDay
+    cachedSlot = currentSlot
+    cachedDay = currentDay
 
     return NextResponse.json({
       rate: cachedRate,
       slot: currentSlot,
-      day: lastDay,
+      day: currentDay,
       nextSlot,
       nextDay,
     })
+
   } catch {
     return NextResponse.json({
       rate: cachedRate || 6.5,
       slot: currentSlot,
-      day: lastDay,
+      day: currentDay,
       nextSlot,
       nextDay,
     })
