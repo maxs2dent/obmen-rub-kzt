@@ -23,6 +23,8 @@ export default function ExchangePage() {
   const [showInfo, setShowInfo] = useState(false)
   const popoverRef = useRef<HTMLDivElement | null>(null)
 
+  /* ================= FETCH RATE ================= */
+
   const fetchRate = async () => {
     try {
       const res = await fetch("https://api.exchangerate-api.com/v4/latest/RUB")
@@ -41,6 +43,8 @@ export default function ExchangePage() {
     return () => clearInterval(interval)
   }, [])
 
+  /* ================= CLOSE POPOVER OUTSIDE ================= */
+
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
@@ -51,12 +55,7 @@ export default function ExchangePage() {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
-  const changeDirection = (dir: Direction) => {
-    setDirection(dir)
-    setAnimate(true)
-    setTimeout(() => setAnimate(false), 300)
-    if (navigator.vibrate) navigator.vibrate(20)
-  }
+  /* ================= RATE LOGIC ================= */
 
   const getRate = useCallback(() => {
     if (!baseRate) return 0
@@ -70,7 +69,9 @@ export default function ExchangePage() {
 
   const result =
     direction === "kzt_to_rub"
-      ? Math.round((numAmount / rate) * 100) / 100
+      ? rate !== 0
+        ? Math.round((numAmount / rate) * 100) / 100
+        : 0
       : Math.round(numAmount * rate * 100) / 100
 
   const giveCurrency = direction === "kzt_to_rub" ? "KZT" : "RUB"
@@ -81,6 +82,15 @@ export default function ExchangePage() {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     })
+
+  /* ================= UX ================= */
+
+  const changeDirection = (dir: Direction) => {
+    setDirection(dir)
+    setAnimate(true)
+    setTimeout(() => setAnimate(false), 300)
+    if (navigator.vibrate) navigator.vibrate(20)
+  }
 
   const formatPhone = (value: string) => {
     const digits = value.replace(/\D/g, "").slice(0, 11)
@@ -124,11 +134,11 @@ export default function ExchangePage() {
       <div className="relative max-w-md mx-auto space-y-12">
 
         <div
-          className={`bg-white/80 backdrop-blur-xl border border-white shadow-2xl rounded-3xl p-6 space-y-6 transition-all duration-300 ${
-            animate ? "scale-[1.02] shadow-green-200" : ""
+          className={`bg-white/70 backdrop-blur-2xl border border-white/40 shadow-2xl rounded-3xl p-6 space-y-6 transition-all duration-300 ${
+            animate ? "scale-[1.02]" : ""
           }`}
         >
-          {/* TITLE */}
+          {/* HEADER */}
           <div className="text-center space-y-2">
             <h1 className="text-3xl font-semibold flex items-center justify-center gap-2">
               Обмен KZT
@@ -158,7 +168,6 @@ export default function ExchangePage() {
             >
               KZT → RUB
             </button>
-
             <button
               onClick={() => changeDirection("rub_to_kzt")}
               className={`flex-1 py-3 rounded-xl ${
@@ -171,7 +180,7 @@ export default function ExchangePage() {
             </button>
           </div>
 
-          {/* GIVE */}
+          {/* INPUT */}
           <div>
             <p className="text-sm text-gray-600 mb-1">Вы отдаёте</p>
             <input
@@ -183,7 +192,17 @@ export default function ExchangePage() {
             />
           </div>
 
-          {/* RATE */}
+          {/* RESULT */}
+          {numAmount > 0 && (
+            <div className="bg-green-50 border border-green-200 rounded-2xl p-4 text-center">
+              <p className="text-sm text-gray-600 mb-1">Вы получите</p>
+              <p className="text-2xl font-bold text-green-600">
+                {formatNumber(result)} {getCurrency}
+              </p>
+            </div>
+          )}
+
+          {/* RATE + GLASS POPOVER */}
           <div className="bg-gray-100 rounded-2xl p-5 text-center relative">
             <div className="flex items-center justify-center gap-2">
               <p className="text-sm text-gray-600">Курс</p>
@@ -191,13 +210,13 @@ export default function ExchangePage() {
               <div className="relative" ref={popoverRef}>
                 <button
                   onClick={() => setShowInfo(!showInfo)}
-                  className="w-5 h-5 flex items-center justify-center rounded-full bg-gray-300 text-xs font-bold text-gray-700 hover:bg-gray-400 transition"
+                  className="w-5 h-5 flex items-center justify-center rounded-full bg-white/60 backdrop-blur-md border border-white/50 text-xs font-bold text-gray-700 shadow-sm hover:scale-110 transition"
                 >
                   ℹ
                 </button>
 
                 {showInfo && (
-                  <div className="absolute top-8 right-0 w-64 bg-white shadow-xl border border-gray-200 rounded-xl p-3 text-xs text-gray-600 leading-relaxed z-50">
+                  <div className="absolute top-8 right-0 w-64 bg-white/70 backdrop-blur-2xl border border-white/40 shadow-2xl rounded-xl p-3 text-xs text-gray-700 leading-relaxed animate-fadeIn">
                     Курс формируется на основании рыночных данных и может изменяться в течение дня.
                   </div>
                 )}
@@ -217,7 +236,7 @@ export default function ExchangePage() {
         <Footer />
       </div>
 
-      {/* STICKY BUTTON */}
+      {/* CTA */}
       {numAmount > 0 && (
         <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto">
           <button
@@ -254,9 +273,7 @@ export default function ExchangePage() {
             ) : (
               <div className="text-center py-10">
                 <div className="text-6xl text-green-500 mb-4">✓</div>
-                <div className="text-lg font-semibold">
-                  Заявка отправлена
-                </div>
+                <div className="text-lg font-semibold">Заявка отправлена</div>
               </div>
             )}
           </div>
