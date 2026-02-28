@@ -123,6 +123,23 @@
     @apply bg-background text-foreground;
   }
 }
+@keyframes successPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.success-pop {
+  animation: successPop 0.35s ease-out forwards;
+}
 :root {
   --brand-green: #16a34a;
   --brand-green-dark: #15803d;
