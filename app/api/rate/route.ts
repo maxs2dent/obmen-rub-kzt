@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server"
 
 let cachedRate: number | null = null
-let lastFetch = 0
+let lastFetch: number | null = null
 
 const CACHE_TIME = 1000 * 60 * 60 * 8 // 8 часов
 
 export async function GET() {
   const now = Date.now()
 
-  if (cachedRate && now - lastFetch < CACHE_TIME) {
+  if (cachedRate && lastFetch && now - lastFetch < CACHE_TIME) {
     return NextResponse.json({
       rate: cachedRate,
       updatedAt: lastFetch,
@@ -17,11 +17,16 @@ export async function GET() {
 
   try {
     const res = await fetch(
-      "https://api.exchangerate.host/latest?base=RUB&symbols=KZT&access_key=94ea7a3c240ef15e6112812758e28039",
+      "https://api.exchangerate.host/latest?base=RUB&symbols=KZT",
       { cache: "no-store" }
     )
 
     const data = await res.json()
+
+    if (!data.rates?.KZT) {
+      throw new Error("Invalid API response")
+    }
+
     const rate = data.rates.KZT
 
     cachedRate = rate
@@ -31,10 +36,10 @@ export async function GET() {
       rate,
       updatedAt: now,
     })
-  } catch {
+  } catch (error) {
     return NextResponse.json({
       rate: cachedRate || 6.5,
-      updatedAt: lastFetch,
+      updatedAt: lastFetch || now,
     })
   }
 }
