@@ -1,17 +1,31 @@
 import { NextResponse } from "next/server"
 
 let cachedRate: number | null = null
-let lastFetch: number | null = null
+let lastSlot: string | null = null
 
-const CACHE_TIME = 1000 * 60 * 60 * 8 // 8 часов
+const UPDATE_SLOTS = ["09:00", "15:00", "21:00"]
+
+function getCurrentSlot(): string | null {
+  const now = new Date()
+  const hours = now.getHours()
+
+  if (hours >= 21) return "21:00"
+  if (hours >= 15) return "15:00"
+  if (hours >= 9) return "09:00"
+
+  return null
+}
 
 export async function GET() {
-  const now = Date.now()
+  const currentSlot = getCurrentSlot()
 
-  if (cachedRate && lastFetch && now - lastFetch < CACHE_TIME) {
+  // если до 09:00 — используем вчерашний 21:00
+  const effectiveSlot = currentSlot ?? "21:00"
+
+  if (cachedRate && lastSlot === effectiveSlot) {
     return NextResponse.json({
       rate: cachedRate,
-      updatedAt: lastFetch,
+      slot: effectiveSlot,
     })
   }
 
@@ -27,19 +41,17 @@ export async function GET() {
       throw new Error("Invalid API response")
     }
 
-    const rate = data.rates.KZT
-
-    cachedRate = rate
-    lastFetch = now
+    cachedRate = data.rates.KZT
+    lastSlot = effectiveSlot
 
     return NextResponse.json({
-      rate,
-      updatedAt: now,
+      rate: cachedRate,
+      slot: effectiveSlot,
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json({
       rate: cachedRate || 6.5,
-      updatedAt: lastFetch || now,
+      slot: effectiveSlot,
     })
   }
 }
