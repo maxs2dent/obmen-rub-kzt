@@ -57,9 +57,15 @@ export default function ExchangePage() {
     }
   }
 
-  useEffect(() => {
+useEffect(() => {
+  fetchRate()
+
+  const interval = setInterval(() => {
     fetchRate()
-  }, [])
+  }, 60000) // 1 минута
+
+  return () => clearInterval(interval)
+}, [])
 
   /* ===== RATE LOGIC ===== */
 
