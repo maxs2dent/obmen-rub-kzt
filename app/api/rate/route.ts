@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server"
 
+export const dynamic = "force-dynamic"
+
 let cachedRate: number | null = null
 let cachedSlot: string | null = null
 let cachedDay: string | null = null
@@ -7,7 +9,7 @@ let cachedDay: string | null = null
 function getMoscowTime() {
   const now = new Date()
   const utc = now.getTime() + now.getTimezoneOffset() * 60000
-  return new Date(utc + 3 * 60 * 60 * 1000) // UTC+3
+  return new Date(utc + 3 * 60 * 60 * 1000)
 }
 
 function getSlotInfo() {
@@ -53,10 +55,39 @@ function getSlotInfo() {
   }
 }
 
+async function fetchPrimaryRate() {
+  const res = await fetch(
+    "https://api.exchangerate.host/latest?base=RUB&symbols=KZT",
+    { cache: "no-store" }
+  )
+
+  const data = await res.json()
+
+  if (!data?.rates?.KZT) {
+    throw new Error("Primary API failed")
+  }
+
+  return data.rates.KZT
+}
+
+async function fetchFallbackRate() {
+  const res = await fetch(
+    "https://open.er-api.com/v6/latest/RUB",
+    { cache: "no-store" }
+  )
+
+  const data = await res.json()
+
+  if (!data?.rates?.KZT) {
+    throw new Error("Fallback API failed")
+  }
+
+  return data.rates.KZT
+}
+
 export async function GET() {
   const { currentSlot, currentDay, nextSlot, nextDay } = getSlotInfo()
 
-  // если слот и день не изменились — отдаём кеш
   if (
     cachedRate &&
     cachedSlot === currentSlot &&
@@ -72,23 +103,20 @@ export async function GET() {
   }
 
   try {
-    const res = await fetch(
-      "https://api.exchangerate.host/latest?base=RUB&symbols=KZT",
-      { cache: "no-store" }
-    )
+    let rate: number
 
-    const data = await res.json()
-
-    if (!data.rates?.KZT) {
-      throw new Error("Invalid API response")
+    try {
+      rate = await fetchPrimaryRate()
+    } catch {
+      rate = await fetchFallbackRate()
     }
 
-    cachedRate = data.rates.KZT
+    cachedRate = rate
     cachedSlot = currentSlot
     cachedDay = currentDay
 
     return NextResponse.json({
-      rate: cachedRate,
+      rate,
       slot: currentSlot,
       day: currentDay,
       nextSlot,
