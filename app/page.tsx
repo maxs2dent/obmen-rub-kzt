@@ -73,7 +73,7 @@ useEffect(() => {
     if (!baseRate) return 0
 
     return direction === "kzt_to_rub"
-      ? Math.round(baseRate * 1.029 * 100) / 100
+      ? Math.round(baseRate * 1.032 * 100) / 100
       : Math.round(baseRate * 0.965 * 100) / 100
   }, [baseRate, direction])
 
