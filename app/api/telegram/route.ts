@@ -61,9 +61,17 @@ export async function POST(request: Request) {
     const telegramData = await telegramResponse.json()
 
     if (!telegramData.ok) {
-      return NextResponse.json({ error: "Telegram failed" }, { status: 500 })
-    }
+  console.error("Telegram error:", telegramData)
 
+  return NextResponse.json(
+    {
+      error: telegramData.description,
+      code: telegramData.error_code,
+      telegram: telegramData,
+    },
+    { status: 500 }
+  )
+}
     return NextResponse.json({ success: true })
 
   } catch {
